@@ -1,0 +1,33 @@
+extends layout
+
+block content
+  a(href="/") Homepage
+  h1 List of Guests:
+  table
+    tr
+      th Name 
+      - if(admin == 1) {
+        th Message
+      - }
+      
+    each guest in guests
+      tr
+        td #{guest.name}
+        - if(admin == 1) {
+          td #{guest.msg}
+        - }
+        
+
+  br
+  br
+  h4 Check in by filling in the following
+  
+  form(action="", method="post")
+    input(type="text", name="name", placeholder="Name")
+    br
+    input(type="text", name="msg", placeholder="Message")
+    br
+    br
+    input(type="submit")
+  
+  
