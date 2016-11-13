@@ -3,24 +3,32 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 
-const MONGO_HOST = process.env.OPENSHIFT_MONGODB_DB_HOST;
-const MONGO_PORT = process.env.OPENSHIFT_MONGODB_DB_PORT;
+var passport = require('passport');
+var strategy = require('./setup-passport');
+
+var Auth0Strategy = require('passport-auth0');
 
 var mongoose = require('mongoose');
+const MONGO_HOST = process.env.OPENSHIFT_MONGODB_DB_HOST;
+const MONGO_PORT = process.env.OPENSHIFT_MONGODB_DB_PORT;
+const MONGO_PASSWORD = process.env.OPENSHIFT_MONGODB_DB_PASSWORD;
+const DB_NAME = 'shoppingcart';
+
 if(MONGO_HOST) {
-  mongoose.connect('mongodb://admin:QHVHC3Et7eGI@' + MONGO_HOST + ':' + MONGO_PORT + '/guestbook');
+  mongoose.connect('mongodb://admin:' + MONGO_PASSWORD + '@' + MONGO_HOST + ':' + MONGO_PORT + '/' + DB_NAME);
 }
 else {
-  mongoose.connect('mongodb://localhost/bookstore');
+  require('dotenv').config();
+  mongoose.connect('mongodb://localhost/' + DB_NAME);
 }
 
-var app = express();
 
-var Email = require('./models/Email.js');
+var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,6 +43,35 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+
+
+app.get('*', function(req, res, next) {
+  if(req.user){
+    req.session.user = req.user;
+    req.session.user_id = req.session.user._json.user_id;
+  }
+  next();
+});
+
+app.get('/callback',
+  passport.authenticate('auth0', { failureRedirect: '/Error' }),
+  function(req, res) {
+    if (!req.user) {
+      throw new Error('user null');
+    }
+    console.log('login worked!');
+    res.redirect("/login");
+  });
+
+app.get('/login', function (req, res) {
+  res.redirect('/'); // index
+});
+
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
