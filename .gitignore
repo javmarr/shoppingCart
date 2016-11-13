@@ -1,2 +1,3 @@
 .env*
 card_*
+node_modules/
