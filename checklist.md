@@ -15,8 +15,8 @@ User stories help you to think about who a certain feature is built for and why.
 
 # User Stories
 ## Home page/Login page
-[ ] As a customer I want to see the featured item(s)
-[ ] As a customer I want to be able to create an account and login to have a profile so that I can checkout faster.
+[~] As a customer I want to see the featured item(s)
+[√] As a customer I want to be able to create an account and login to have a profile so that I can checkout faster.
 [ ] As a customer I want to see categories of products (if applicable)
 [ ] As an admin I want to login to manage the inventory.
 
