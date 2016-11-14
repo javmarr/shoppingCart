@@ -6,11 +6,33 @@ var Email = require('../models/Email.js');
 /* GET users listing. */
 // router.get('/:user', function(req, res, next) {
 router.get('/', function(req, res, next) {
+  res.render('index', {title: "Home"});
+});
+
+router.get('/splash', function(req, res, next) {
   Email.find(function(err, docs){
-    // console.log('this got called');
-    // call the views/check-in/index.jade file with variable
-    // "guests" containing the results from the find()
-    res.render('index', {guests: docs});
+    res.render('splash', {title: "Email Registration", guests: docs});
+  });
+});
+
+router.get('/inventory', function(req, res, next) {
+  Email.find(function(err, docs){
+
+    res.render('inventory', {title: "Inventory", guests: docs});
+  });
+});
+
+router.get('/cart', function(req, res, next) {
+  Email.find(function(err, docs){
+
+    res.render('cart', {title: "Cart", guests: docs});
+  });
+});
+
+router.get('/contact', function(req, res, next) {
+  Email.find(function(err, docs){
+
+    res.render('contact', {title: "Contact Us", guests: docs});
   });
 });
 
@@ -28,10 +50,10 @@ router.post('/submit', function(req, res, next){
       if (err) {
         if (err['code'] == 11000)
           msg = "Email already registered";
-        res.render('index', {err: msg})
+        res.render('index', {title: "Success", err: msg})
         // res.send('error ' + err);
       }
-      else res.render('success', {email:req.body.email});
+      else res.render('success', {title: "Home", email:req.body.email});
     });
   }
 });

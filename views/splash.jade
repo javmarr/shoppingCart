@@ -1,0 +1,18 @@
+extends layout
+// Page Content
+block content
+  div.container
+    div.row
+      div.col-lg-12.text-center
+        h1 Online Bookstore - Coming Soon!
+        p.lead Signup below to be notified when we open later this year               
+        ul.list-unstyled
+          li
+            p(style="color:red") #{err}
+            form(class="form" action="/submit" method="post")
+              label Email: 
+              input(type="text" name="email" placeholder="Email")
+              input(class="btn btn-default" type="submit" value="Submit")
+      br
+      br
+      p Bootstrap Template from: https://github.com/BlackrockDigital/startbootstrap-bare/blob/master/index.html

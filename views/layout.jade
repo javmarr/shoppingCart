@@ -1,9 +1,52 @@
 doctype html
 html
   head
+    //- has to be UTF-8 for arrows to work
+    meta(charset="UTF-8")
     title= title
-    
+    // Imported CSS
+    link(rel='stylesheet' href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet' href='//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css')
+    link(rel='stylesheet' href='//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css')
+    // Custom CSS
     link(rel='stylesheet', href='/stylesheets/style.css')
     
+    style.
+      .slick-prev:before, .slick-next:before{
+      color:black;
+      }
+      body {
+        padding-top: 70px;
+      }
+      
   body
+    // Navigation
+    nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+      div.container
+        // Brand and toggle get grouped for better mobile display
+        div.navbar-header
+          button.navbar-toggle(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
+            span.sr-only Toggle navigation         
+            span.icon-bar         
+            span.icon-bar          
+            span.icon-bar
+          |                 
+          a.navbar-brand(href='/') Home
+        // Collect the nav links, forms, and other content for toggling
+        div#bs-example-navbar-collapse-1.collapse.navbar-collapse
+          ul.nav.navbar-nav
+            li
+              a(href='/login') Login               
+            li
+              a(href='/inventory') Inventory
+            li
+              a(href='/cart') Cart
+            li
+              a(href='/contact') Contact Us
+        // /.navbar-collapse
+      // /.container
+    script(src='//code.jquery.com/jquery-1.11.0.min.js')
+    script(src='//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js')
     block content
+    
+    
