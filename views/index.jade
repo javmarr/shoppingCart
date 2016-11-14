@@ -1,11 +1,36 @@
 extends layout
 // Page Content
 block content
+  script(src='https://cdn.auth0.com/js/lock/10.0/lock.min.js')
+  script.
+    DOMAIN = '#{DOMAIN}';
+    CLIENT_ID = '#{CLIENT_ID}';
+    REDIRECT_URL = '#{REDIRECT_URL}';
+    console.log('#{JSON.stringify(user)}');
+    
+    var lock = new Auth0Lock(CLIENT_ID, DOMAIN, {
+      auth: {
+        redirectUrl: REDIRECT_URL,
+        responseType: 'code',
+        params: {
+          scope: 'openid email' // Learn about scopes: https://auth0.com/docs/scopes
+        }
+      }
+    });
+  
+  
   div.container
     div.row
       div.col-lg-12.text-center
         h1 Online Bookstore - Grand Opening!
-        
+        p(class="red") #{error}
+        if displayName
+          p Hello, #{displayName}
+          a(href="/logout") Logout
+        else 
+          p Hello, Guest
+          a(onclick="lock.show(); return false;" id="login") Login
+          
       h5 Recently Added
       div.carousel
         div 1
