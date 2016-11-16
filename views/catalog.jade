@@ -41,7 +41,6 @@ block content
       $(document).ready( function () {
         $(".showDetails").click(function (e) {
           console.log("showing details for: " + e.target.id);
-          
           window.document.location = "item/"+e.target.id;          
         });
         
@@ -49,7 +48,7 @@ block content
         $(".removeButton").click(function (e) {
            console.log("removing: " + e.target.id);
           $.get( "removeItem/"+e.target.id, function( data ) {
-            console.log(data);
+            console.log("received: " + data);
             location.reload();
           });
         });

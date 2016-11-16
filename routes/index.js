@@ -34,7 +34,7 @@ router.get('/catalog', function(req, res, next) {
   req.session.error = null;
   req.session.success = null;
 
-  Item.find(function(err, docs){
+  Item.find({show: true}, function(err, docs){
     res.render('catalog', {title: "Catalog", items: docs});
   });
 });
@@ -113,6 +113,7 @@ router.post('/addItem', function(req, res, next) {
     image: req.body.image,
     library: req.body.library,
     inStock: req.body.inStock,
+    show: req.body.show,
     numberInStock: req.body.numberInStock
   });
 

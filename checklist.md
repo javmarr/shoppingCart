@@ -15,10 +15,10 @@ User stories help you to think about who a certain feature is built for and why.
 
 # User Stories
 ## Home page/Login page
-[~] As a customer I want to see the featured item(s)
+[ ] As a customer I want to see the featured item(s)
 [√] As a customer I want to be able to create an account and login to have a profile so that I can checkout faster.
 [ ] As a customer I want to see categories of products (if applicable)
-[ ] As an admin I want to login to manage the inventory.
+[√] As an admin I want to login to manage the inventory.
 
 ## Customer - Catalog View
 [ ] As a customer I want to browse available products so that I can discover new items
@@ -27,7 +27,7 @@ User stories help you to think about who a certain feature is built for and why.
 [ ] As a customer I want to click on an item to so that I may view more detail about the product
 
 ## Customer - Detail View
-[ ] As a customer I want to see images of the product so that I understand what I am getting
+[√] As a customer I want to see images of the product so that I understand what I am getting
 [ ] As a customer I want to add an item to a shopping cart so that I can purchase several items at once
 
 ## Customer - Shopping Cart
@@ -39,12 +39,12 @@ User stories help you to think about who a certain feature is built for and why.
 
 ## Admin - Inventory View
 [ ] As an admin I want to view the available inventory
-[ ] As an admin I want to click on a product so that I can view product detail
-[ ] As an admin I want to click a button so that I can add new products to inventory
+[√] As an admin I want to click on a product so that I can view product detail
+[√] As an admin I want to click a button so that I can add new products to inventory
 
 ## Admin - Detail View
 [ ] As an admin I want to adjust the quantity so that I can update inventory
-[ ] As an admin I want to activate or deactivate a product so that I can control what appears for sale
+[√] As an admin I want to activate or deactivate a product so that I can control what appears for sale
 [ ] As an admin I want to edit product detail so that it is current and up-to-date
 
 ## Admin - Report View

@@ -35,21 +35,19 @@ html
         // Collect the nav links, forms, and other content for toggling
         div#bs-example-navbar-collapse-1.collapse.navbar-collapse
           ul.nav.navbar-nav
-            //- li
-            //-   a(href='/login') Login               
             li
               a(href='/catalog') Catalog
             li
               a(href='/contact') Contact Us
-              
           ul.nav.navbar-nav.navbar-right")
             if displayName
               li
                 a(href='/cart') Cart
               li
                 a(href="/logout") Logout
-            li
-              a(href='/login') Login
+            else
+              li
+                a(href='/login') Login
         // /.navbar-collapse
       // /.container
     script(src='//code.jquery.com/jquery-1.11.0.min.js')
