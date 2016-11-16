@@ -1,0 +1,31 @@
+extends layout
+// Page Content
+block content
+  div.container
+    div.row
+      div.col-lg-12.text-center
+        h1=title
+
+    if (success)
+      p(style="color: green")=success
+    
+    div
+      img(src="#{item.image}")
+    div
+      p #{item.name}
+      p #{item.author} 
+      button add to cart
+
+    br
+    a(href="/" class="btn btn-default btn-block") Back
+    
+    script.
+      $(document).ready( function () {
+        $(".removeButton").click(function (e) {
+           console.log(e.target.id);
+          $.get( "removeItem/"+e.target.id, function( data ) {
+            console.log(data);
+            location.reload();
+          });
+        });
+      });

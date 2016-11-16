@@ -1,0 +1,59 @@
+extends layout
+// Page Content
+block content
+  div.container
+    div.row
+      div.col-lg-12.text-center
+        h1=title
+        
+      p Add a book by inputting the information below.
+      br
+      if (error && error.message)
+        p(style="color: red") Error: #{error.message}
+      
+      if (success)
+        p(style="color: green")=success
+        
+      form(action ='', method = "post")
+        p isbn-10
+        input(type='text', name='isbn', placeholder='isbn' value="0553204777")
+        br 
+        br
+        p name
+        input(type='text', name='name', placeholder='name' value="The Thing: Novel")
+        br 
+        br
+        p author
+        input(type='text', name='author', placeholder='author' value="Alan Dean Foster")
+        br 
+        br
+        p genre
+        input(type='text', name='genre', placeholder='genre' value="Fiction Horror")
+        br 
+        br
+        p desc
+        textarea(name="desc" rows="4" cols="50")
+          | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras quis arcu odio. Aenean varius efficitur leo. Suspendisse nisi metus, porttitor sed sem et, interdum euismod dolor. Cras non urna ut justo sollicitudin congue. Curabitur blandit dolor et congue tincidunt. Aenean nibh sapien, condimentum vel porttitor inter
+        br 
+        br
+        p cost
+        input(type='number', step='0.01', name='cost', placeholder='cost' value="10.50")
+        br 
+        br
+        p price
+        input(type='number', step='0.01', name='price', placeholder='price' value="0.50")
+        br 
+        br
+        p image
+        input(type='text', name='image', placeholder='image' value="https://images-na.ssl-images-amazon.com/images/I/51jeLjLhW4L._SX304_BO1,204,203,200_.jpg")
+        br 
+        br
+        p library
+        input(type='text', name='library', placeholder='library' value="McAllen Public Library")
+        br 
+        br
+        p numberInStock
+        input(type='number', step='1', name='numberInStock', placeholder='numberInStock' value="3")
+        br 
+        br
+        input(type='submit', value='Submit')

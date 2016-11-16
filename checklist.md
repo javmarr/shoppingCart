@@ -54,23 +54,23 @@ User stories help you to think about who a certain feature is built for and why.
 
 # Data (sampling, does not reflect database specific keys)
 ## Product
-[ ] Name
-[ ] Description
-[ ] model
-[ ] image
-[ ] cost
-[ ] price
+[√] Name
+[√] Description
+[√] model
+[√] image
+[√] cost
+[√] price
 
 ## Shopping Cart (for active carts)
 Customer
 
 ## Invoice (for completed purchases)
-[ ] Date Purchased
-[ ] Item
-[ ] Quantity
-[ ] Price
+[√] Date Purchased
+[√] Item
+[√] Quantity
+[√] Price
 
 ## Customer
-[ ] Name
-[ ] Shipping Address
-[ ] Purchase History
+[√] Name
+[√] Shipping Address
+[√] Purchase History

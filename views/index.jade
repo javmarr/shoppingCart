@@ -23,7 +23,7 @@ block content
     div.row
       div.col-lg-12.text-center
         h1 Online Bookstore - Grand Opening!
-        p(class="red") #{error}
+        p(style="color: red") #{error}
         if displayName
           p Hello, #{displayName}
           a(href="/logout") Logout
@@ -31,6 +31,9 @@ block content
           p Hello, Guest
           a(onclick="lock.show(); return false;" id="login") Login
           
+      if (success)
+        p(style="color: green")=success
+        
       h5 Recently Added
       div.carousel
         div 1
