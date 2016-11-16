@@ -8,7 +8,10 @@ block content
 
     if (success)
       p(style="color: green")=success
-              
+    
+    if (error)
+      p(style="color: red")=error
+    
     a(href="/addItem" class="btn btn-success btn-sm") Add Item
     
     table(class="table table-striped table-hover")

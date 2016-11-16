@@ -1,3 +1,9 @@
+// TODO:
+//   Save user
+//   make admins
+//   only admins can view certain things (delete/add inventory, etc)
+
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');

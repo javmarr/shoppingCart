@@ -4,6 +4,14 @@ var router = express.Router();
 var Cart = require('../models/Cart.js');
 var Email = require('../models/Email.js');
 var Item = require('../models/Item.js');
+var User = require('../models/User.js');
+
+function setupErrorAndSuccess(req, res, next) {
+  res.locals.error = req.session.error;
+  res.locals.success = req.session.success;
+  req.session.error = null;
+  req.session.success = null;
+}
 
 /* GET users listing. */
 // router.get('/:user', function(req, res, next) {
@@ -13,10 +21,7 @@ router.get('/', function(req, res, next) {
     console.log(req.user);
     res.locals.displayName = req.user.displayName;
   }
-  res.locals.error = req.session.error;
-  res.locals.success = req.session.success;
-  req.session.error = null;
-  req.session.success = null;
+  setupErrorAndSuccess(req, res, next);
 
   returnToURL = "https://javmarr.auth0.com/v2/logout?federated&returnTo=url_encode(https://javmarr.auth0.com/logout?returnTo=http://www.example.com)&access_token=[facebook access_token]";
   res.render('index', { DOMAIN: process.env.DOMAIN, CLIENT_ID: process.env.CLIENT_ID, REDIRECT_URL: process.env.CALLBACK_URL, returnToURL: returnToURL});
@@ -29,10 +34,15 @@ router.get('/splash', function(req, res, next) {
 });
 
 router.get('/catalog', function(req, res, next) {
-  res.locals.error = req.session.error;
-  res.locals.success = req.session.success;
-  req.session.error = null;
-  req.session.success = null;
+  setupErrorAndSuccess(req, res, next);
+
+  Item.find({show: true}, function(err, docs){
+    res.render('catalog', {title: "Catalog", items: docs});
+  });
+});
+
+router.get('/catalog', function(req, res, next) {
+  setupErrorAndSuccess(req, res, next);
 
   Item.find({show: true}, function(err, docs){
     res.render('catalog', {title: "Catalog", items: docs});
@@ -70,7 +80,6 @@ router.get('/contact', function(req, res, next) {
 
 router.get('/removeItem/:itemID', function(req, res, next) {
   if (req.user) {
-    var userID = req.session.user_id;
     var itemID = req.params.itemID;
     console.log("trying to remove item");
 
@@ -87,21 +96,74 @@ router.get('/removeItem/:itemID', function(req, res, next) {
       }
     });
   } else {
-    req.session.error = 'invalid user';
+    req.session.error = 'error deleting item';
+    res.locals.error = req.session.error;
     res.send('error');
   }
 });
 
+
+router.get('/myAccount', function(req, res, next) {
+
+  if (req.user) {
+    setupErrorAndSuccess(req, res, next);
+    var userID = req.session.user_id;
+    console.log('getting account (user): ');
+    console.log(userID);
+    console.log('getting account (userID): ' + userID);
+    User.findOne({userID: userID}, function(err, doc) {
+      console.log('info found: ');
+      console.log(doc);
+      res.render('myAccount', {title: "Account Information", user: doc});
+    });
+  }
+  else {
+    res.send("user not logged in");
+  }
+
+});
+
+router.post('/myAccount', function(req, res, next) {
+  var userID = req.session.user_id;
+
+  User.update(
+    {userID: userID },{
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      streetAddr: req.body.streetAddr,
+      city: req.body.city,
+      state: req.body.state,
+      zip: req.body.zip,
+    },
+    function (err, raw) {
+      if (err){
+        console.log('account error was ' + err);
+        console.log('The raw response from Mongo was ' + raw);
+        console.log('---SAVE ERROR---');
+        if (err.name == 'MongoError' && err.code == '11000'){
+          console.log('Duplicate key');
+          req.session.error = {
+            message: 'User is already on the list'
+          };
+          res.redirect('/myAccount');
+        }
+        console.log(err.name);
+        console.log(err.code);
+      } else {
+        req.session.success = 'User updated';
+        res.redirect('/myAccount');
+      }
+  });
+});
+
+
 router.get('/addItem', function(req, res, next) {
-  res.locals.error = req.session.error;
-  res.locals.success= req.session.success;
-  req.session.error = null;
-  req.session.success = null;
+  setupErrorAndSuccess(req, res, next);
   res.render('addItem', {title: "Add item"});
 });
 
 router.post('/addItem', function(req, res, next) {
-
   var item = new Item({
     isbn: req.body.isbn,
     name: req.body.name,
