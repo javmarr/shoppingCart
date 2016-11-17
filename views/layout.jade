@@ -18,6 +18,8 @@ html
       body {
         padding-top: 70px;
       }
+
+
       
   body
     // Navigation
@@ -50,11 +52,27 @@ html
                 a(href="/logout") Logout
             else
               li
-                a(href='/login') Login
+                a(onclick="lock.show(); return false;" id="login") Login
+                //- a(href='/login') Login
         // /.navbar-collapse
       // /.container
     script(src='//code.jquery.com/jquery-1.11.0.min.js')
     script(src='//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js')
+    script(src='https://cdn.auth0.com/js/lock/10.0/lock.min.js')
     block content
-    
+    script.
+      DOMAIN = '#{DOMAIN}';
+      CLIENT_ID = '#{CLIENT_ID}';
+      REDIRECT_URL = '#{REDIRECT_URL}';
+      console.log('log user in: #{JSON.stringify(user)}');
+
+      var lock = new Auth0Lock(CLIENT_ID, DOMAIN, {
+        auth: {
+          redirectUrl: REDIRECT_URL,
+          responseType: 'code',
+          params: {
+            scope: 'openid email' // Learn about scopes: https://auth0.com/docs/scopes
+          }
+        }
+      });
     

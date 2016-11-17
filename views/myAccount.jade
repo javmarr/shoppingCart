@@ -14,89 +14,70 @@ block content
         if (success)
           p(style="color: green")=success
 
-          
-        form(action ='', method = "post")
-          p firstName
-          input(type='text', name='firstName', placeholder='firstName', value="#{user.firstName}")
-          br 
-          br
-          p lastName
-          input(type='text', name='lastName', placeholder='lastName', value="#{user.lastName}")
-          br 
-          br
-          p email
-          input(type='email', name='email', placeholder='email', value="#{user.email}")
-          br 
-          br
-          p streetAddr
-          input(type='text', name='streetAddr', placeholder='streetAddr', value="#{user.streetAddr}")
-          br 
-          br
-          p city
-          input(type='text', name='city', placeholder='city', value="#{user.city}")
-          br 
-          br
-          p state
-          select(name="state")
-            option(value="AL") Alabama (AL)
-            option(value="AK") Alaska (AK)
-            option(value="AZ") Arizona (AZ)
-            option(value="AR") Arkansas (AR)
-            option(value="CA") California (CA)
-            option(value="CO") Colorado (CO)
-            option(value="CT") Connecticut (CT)
-            option(value="DE") Delaware (DE)
-            option(value="DC") District Of Columbia (DC)
-            option(value="FL") Florida (FL)
-            option(value="GA") Georgia (GA)
-            option(value="HI") Hawaii (HI)
-            option(value="ID") Idaho (ID)
-            option(value="IL") Illinois (IL)
-            option(value="IN") Indiana (IN)
-            option(value="IA") Iowa (IA)
-            option(value="KS") Kansas (KS)
-            option(value="KY") Kentucky (KY)
-            option(value="LA") Louisiana (LA)
-            option(value="ME") Maine (ME)
-            option(value="MD") Maryland (MD)
-            option(value="MA") Massachusetts (MA)
-            option(value="MI") Michigan (MI)
-            option(value="MN") Minnesota (MN)
-            option(value="MS") Mississippi (MS)
-            option(value="MO") Missouri (MO)
-            option(value="MT") Montana (MT)
-            option(value="NE") Nebraska (NE)
-            option(value="NV") Nevada (NV)
-            option(value="NH") New Hampshire (NH)
-            option(value="NJ") New Jersey (NJ)
-            option(value="NM") New Mexico (NM)
-            option(value="NY") New York (NY)
-            option(value="NC") North Carolina (NC)
-            option(value="ND") North Dakota (ND)
-            option(value="OH") Ohio (OH)
-            option(value="OK") Oklahoma (OK)
-            option(value="OR") Oregon (OR)
-            option(value="PA") Pennsylvania (PA)
-            option(value="RI") Rhode Island (RI)
-            option(value="SC") South Carolina (SC)
-            option(value="SD") South Dakota (SD)
-            option(value="TN") Tennessee (TN)
-            option(value="TX") Texas (TX)
-            option(value="UT") Utah (UT)
-            option(value="VT") Vermont (VT)
-            option(value="VA") Virginia (VA)
-            option(value="WA") Washington (WA)
-            option(value="WV") West Virginia (WV)
-            option(value="WI") Wisconsin (WI)
-            option(value="WY") Wyoming (WY)
-          br 
-          br
-          p zip
-          input(type='number', step='1' , name='zip', placeholder="zip", value="#{user.zip}")
-          br 
-          br
-          input(type='submit', value='Submit')
+        if (user)
+          form(action ='', method = "post")
+            p firstName
+            input(type='text', name='firstName', placeholder='firstName', value="#{user.firstName}", required)
+            br 
+            br
+            p lastName
+            input(type='text', name='lastName', placeholder='lastName', value="#{user.lastName}", required)
+            br 
+            br
+            p email
+            input(type='email', name='email', placeholder='email', value="#{user.email}", required)
+            br 
+            br
+            p streetAddr
+            input(type='text', name='streetAddr', placeholder='streetAddr', value="#{user.streetAddr}")
+            br 
+            br
+            p city
+            input(type='text', name='city', placeholder='city', value="#{user.city}")
+            br 
+            br
+            p state (TX)
+            input(type='text', name='state', pattern="[A-Z]{2}", size='2', placeholder='', value="#{user.state}")
+            br 
+            br
+            p zip
+            input(type='text', pattern='[[A-Z0-9]{4,}', name='zip', placeholder="zip", value="#{user.zip}")
+            br 
+            br
+            input(type='submit', value='Submit')
+        else
+          form(action ='', method = "post")
+            p firstName
+            input(type='text', name='firstName', placeholder='firstName', required) 
+            br 
+            br
+            p lastName
+            input(type='text', name='lastName', placeholder='lastName', required)
+            br 
+            br
+            p email
+            input(type='email', name='email', placeholder='email', required)
+            br 
+            br
+            p streetAddr
+            input(type='text', name='streetAddr', placeholder='streetAddr')
+            br 
+            br
+            p city
+            input(type='text', name='city', placeholder='city')
+            br 
+            br
+            p state (TX)
+            input(type='text', name='state', pattern="[A-Z]{2}", size='2', placeholder='')
+            br 
+            br
+            p zip
+            input(type='text', pattern='[A-Z0-9]{4,}', name='zip', placeholder="zip")
+            br 
+            br
+            input(type='submit', value='Submit')
+            
           script.
             $(document).ready( function () {
-              
+              //- $("option")
             });

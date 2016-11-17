@@ -11,20 +11,27 @@ function setupErrorAndSuccess(req, res, next) {
   res.locals.success = req.session.success;
   req.session.error = null;
   req.session.success = null;
-}
 
-/* GET users listing. */
-// router.get('/:user', function(req, res, next) {
-router.get('/', function(req, res, next) {
   if (req.user) {
     console.log(req.user.displayName);
     console.log(req.user);
     res.locals.displayName = req.user.displayName;
   }
-  setupErrorAndSuccess(req, res, next);
+
+  // login items
+  res.locals.DOMAIN = process.env.DOMAIN;
+  res.locals.CLIENT_ID = process.env.CLIENT_ID;
+  res.locals.REDIRECT_URL = process.env.CALLBACK_URL;
 
   returnToURL = "https://javmarr.auth0.com/v2/logout?federated&returnTo=url_encode(https://javmarr.auth0.com/logout?returnTo=http://www.example.com)&access_token=[facebook access_token]";
-  res.render('index', { DOMAIN: process.env.DOMAIN, CLIENT_ID: process.env.CLIENT_ID, REDIRECT_URL: process.env.CALLBACK_URL, returnToURL: returnToURL});
+  res.locals.returnToURL = returnToURL;
+}
+
+/* GET users listing. */
+// router.get('/:user', function(req, res, next) {
+router.get('/', function(req, res, next) {
+  setupErrorAndSuccess(req, res, next);
+  res.render('index');
 });
 
 router.get('/splash', function(req, res, next) {
@@ -36,14 +43,7 @@ router.get('/splash', function(req, res, next) {
 router.get('/catalog', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
 
-  Item.find({show: true}, function(err, docs){
-    res.render('catalog', {title: "Catalog", items: docs});
-  });
-});
-
-router.get('/catalog', function(req, res, next) {
-  setupErrorAndSuccess(req, res, next);
-
+  //find items that should be shown
   Item.find({show: true}, function(err, docs){
     res.render('catalog', {title: "Catalog", items: docs});
   });
@@ -57,25 +57,21 @@ router.get('/catalog.json', function(req, res, next) {
 });
 
 router.get('/item/:itemID', function(req, res, next) {
+  setupErrorAndSuccess(req, res, next);
   var itemID = req.params.itemID;
-
   Item.findOne({_id:itemID}, function(err, doc) {
     res.render('item', {title: "Item", item: doc});
   });
 });
 
 router.get('/cart', function(req, res, next) {
-  Email.find(function(err, docs){
-
-    res.render('cart', {title: "Cart", guests: docs});
-  });
+  setupErrorAndSuccess(req, res, next);
+  res.render('cart', {title: "Cart", guests: docs});
 });
 
 router.get('/contact', function(req, res, next) {
-  Email.find(function(err, docs){
-
-    res.render('contact', {title: "Contact Us", guests: docs});
-  });
+  setupErrorAndSuccess(req, res, next);
+  res.render('contact', {title: "Contact Us"});
 });
 
 router.get('/removeItem/:itemID', function(req, res, next) {
@@ -104,7 +100,6 @@ router.get('/removeItem/:itemID', function(req, res, next) {
 
 
 router.get('/myAccount', function(req, res, next) {
-
   if (req.user) {
     setupErrorAndSuccess(req, res, next);
     var userID = req.session.user_id;
@@ -114,47 +109,61 @@ router.get('/myAccount', function(req, res, next) {
     User.findOne({userID: userID}, function(err, doc) {
       console.log('info found: ');
       console.log(doc);
+      // if (doc == null) {
+      //   // no account yet
+      //   res.render('myAccount', {title: "Account Information", user: null});
+      // } else {
+        //update values based on those saved
       res.render('myAccount', {title: "Account Information", user: doc});
+      // }
     });
   }
   else {
-    res.send("user not logged in");
+    console.log("user not logged in");
+    res.redirect("/");
   }
 
 });
 
 router.post('/myAccount', function(req, res, next) {
   var userID = req.session.user_id;
-
-  User.update(
-    {userID: userID },{
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      streetAddr: req.body.streetAddr,
-      city: req.body.city,
-      state: req.body.state,
-      zip: req.body.zip,
-    },
-    function (err, raw) {
-      if (err){
-        console.log('account error was ' + err);
-        console.log('The raw response from Mongo was ' + raw);
-        console.log('---SAVE ERROR---');
-        if (err.name == 'MongoError' && err.code == '11000'){
-          console.log('Duplicate key');
-          req.session.error = {
-            message: 'User is already on the list'
-          };
+  if (userID) {
+    User.findOneAndUpdate(
+      {userID: userID },
+      {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        streetAddr: req.body.streetAddr,
+        city: req.body.city,
+        state: req.body.state,
+        zip: req.body.zip,
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true },
+      function (err, raw) {
+        if (err){
+          console.log('account error was ' + err);
+          console.log('The raw response from Mongo was ' + raw);
+          console.log('---SAVE ERROR---');
+          if (err.name == 'MongoError' && err.code == '11000'){
+            console.log('Duplicate key');
+            req.session.error = {
+              message: 'User is already on the list'
+            };
+            res.redirect('/myAccount');
+          }
+          console.log(err.name);
+          console.log(err.code);
+        } else {
+          req.session.success = 'User updated';
           res.redirect('/myAccount');
         }
-        console.log(err.name);
-        console.log(err.code);
-      } else {
-        req.session.success = 'User updated';
-        res.redirect('/myAccount');
-      }
-  });
+    });
+  }
+  else {
+    res.send('no user logged in');
+  }
+
 });
 
 
