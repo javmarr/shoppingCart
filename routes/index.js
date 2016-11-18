@@ -116,49 +116,69 @@ router.post('/addToCart', function(req, res, next) {
     console.log(req.body);
 
     var userID = "google-oauth2|107118582410291357582";
+    // var userID = req.session.userID;
     var itemID = req.body.itemID;
-    var price = req.body.price;
-    var qty = req.body.qty;
+    var price = parseFloat(req.body.price);
+    var qty = parseInt(req.body.qty);
     console.log("3");
     var item = {itemID: itemID, qty: qty, price: price};
-    var person = {firstName:"John", lastName:"Doe", age:50, eyeColor:"blue"};
 
     console.log("ADDING TO CART ITEM: " + itemID);
     console.log ('the item to add to cart');
     console.log (item);
-    console.log ('the person');
-    console.log (person);
 
-    Cart.findOneAndUpdate(
-      {userID: userID},
-      {$push : {items:item} },
-      {upsert: true, new: true},
-      function (err, raw) {
-        if (err){
-          console.log('account error was ' + err);
-          console.log('The raw response from Mongo was ' + raw);
-          console.log('---SAVE ERROR---');
-          if (err.name == 'MongoError' && err.code == '11000'){
-            console.log('Duplicate key');
-            req.session.error = {
-              message: 'User is already on the list'
-            };
-            res.redirect('/myAccount');
+    // Cart.findOneAndUpdate({userID: userID}, {$push: {items: item}});
+
+    // if the item is already on the cart increase qty
+    // Cart.findOneAndUpdate({userID:userID, "items.itemID": itemID},
+    //   {$inc: {"items.$.qty": 1}},
+    Cart.findOne({userID:userID, "items.itemID": itemID}, function(err, doc){
+      console.log('err: ' + err);
+      console.log('got: ' + doc);
+      if (err) {res.send(err);}
+      if (doc) {
+        // found item on user's cart
+        var updatedItems = doc.items;
+
+        for (i in updatedItems) {
+          // get index for item
+          if (updatedItems[i].itemID == itemID) {
+            // update the value for qty
+            updatedItems[i].qty += qty;
           }
-          console.log(err.name);
-          console.log(err.code);
-        } else {
-          req.session.success = 'User updated';
-          res.send('added to cart');
-          // res.redirect('/cart');
         }
+
+        // save the updated items
+        Cart.update({'userID': userID, 'items.itemID': itemID},
+              {$set: {'items': updatedItems}},
+              function(err, doc) {
+                req.session.success = 'Cart updated';
+                res.send('increased qty by ' + qty +' on cart');
+              });
+      }
+      else {
+        // item is not on user's cart
+        console.log('failed to increase qty, adding new item instead');;
+
+        // find cart and add item to it
+        Cart.findOneAndUpdate(
+          {userID: userID},
+          {$push : {items:item} },
+          function (err, raw) {
+            if (err){
+              console.log('account error was ' + err);
+              console.log('The raw response from Mongo was ' + raw);
+              console.log('---SAVE ERROR---');
+              console.log(err.name);
+              console.log(err.code);
+            } else {
+              req.session.success = 'Cart updated';
+              res.send('added to cart');
+              // res.redirect('/cart');
+            }
+        });
+      } // end else
     });
-  //
-  // } else {
-  //   req.session.error = 'error deleting item';
-  //   res.locals.error = req.session.error;
-  //   res.send('error');
-  // }
 });
 
 router.get('/removeItem/:itemID', function(req, res, next) {

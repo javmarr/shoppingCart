@@ -1,5 +1,5 @@
 // TODO:
-//   make admins
+//   save cart to user
 //   only admins can view certain things (delete/add inventory, etc)
 
 

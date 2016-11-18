@@ -4,7 +4,7 @@ var InvoiceSchema = new mongoose.Schema({
   userID: {type: String, required: true, unique: true},
   purchaseDate: {type: Date, required: true, default: Date.now()},
   items: [{
-    itemID: {type: Number, required: true},
+    itemID: {type: String, required: true},
     qty: {type: Number, required: true},
     price: {type: Number, required: true}
   }]
