@@ -71,11 +71,37 @@ app.get('/callback',
     res.redirect("/login");
   });
 
+var User = require('./models/User.js');
+var Cart = require('./models/Cart.js');
+
 app.get('/login', function (req, res) {
-  res.redirect('/'); // index
+  // console.log('session user: ' + req.session.user_id);
+  var userID = req.session.user_id;
+  User.findOne({userID: userID}, function (err, user) {
+    if (err) res.send('error in route /login');
+    if (user) res.redirect('/');
+    else {
+      console.log('user not in DB, adding them');
+      var profile = {isAdmin: false, userID: userID, firstName: "", lastName: "", email: "", streetAddr: "", city: "", state: "", zip: ""};
+      var newUser = new User(profile);
+      newUser.save(function(err){
+        if (err) res.send("error saving user in /login");
+        // just created user, show account management
+        else {
+          var userCart = new Cart({userID: userID, items: []});
+          userCart.save(function(err) {
+            res.redirect('/myAccount');
+          });
+        }
+      });
+    }
+  });
+
 });
 
 app.get('/logout', function(req, res){
+  req.session.user = null;
+  req.session.user_id = null;
   req.logout();
   res.redirect('/');
 });

@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 
-var CartSchema = new mongoose.Schema({
+var InvoiceSchema = new mongoose.Schema({
   userID: {type: String, required: true, unique: true},
+  purchaseDate: {type: Date, required: true, default: Date.now()},
   items: [{
     itemID: {type: Number, required: true},
     qty: {type: Number, required: true},
@@ -9,4 +10,4 @@ var CartSchema = new mongoose.Schema({
   }]
 });
 
-module.exports = mongoose.model('Cart', CartSchema);
+module.exports = mongoose.model('Invoice', InvoiceSchema);

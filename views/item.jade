@@ -10,22 +10,81 @@ block content
       p(style="color: green")=success
     
     div
-      img(src="#{item.image}")
+      img(src="#{item.image}" width="300px" height="500px")
+      //- button add to cart
+      div
+      p(class="price") $#{item.price}
+      p QTY 
+      input(class="qty" type="number" id="#{item.price}" step="1" min="1" value="1")
+      button(class="btn btn-primary addToCart" id="#{item.id}") Add to Cart
+      if isAdmin
+        button(class="btn btn-default editItem" id="#{item.id}") Edit Item
     div
-      p #{item.name}
-      p #{item.author} 
-      button add to cart
+      p isbn: #{item.isbn}
+      br
+      br
+      p name: #{item.name}
+      br
+      br
+      p author: #{item.author}
+      br
+      br
+      p genre: #{item.genre}
+      br
+      br
+      p desc: #{item.desc}
+      br
+      br
+      p cost: #{item.cost}
+      br
+      br
+      p price: #{item.price}
+      br
+      br
+      p library: #{item.library}
+      br
+      br
+      p inStock: #{item.inStock}
+      br
+      br
+      p show: #{item.show}
+      br
+      br
+      p numberInStock: #{item.numberInStock}
+      br
+      br
 
     br
     a(href="/" class="btn btn-default btn-block") Back
+
     
     script.
       $(document).ready( function () {
-        $(".removeButton").click(function (e) {
-           console.log(e.target.id);
-          $.get( "removeItem/"+e.target.id, function( data ) {
-            console.log(data);
-            location.reload();
-          });
+        $(".addToCart").click(function (e) {
+          console.log("adding to cart: " + e.target.id);
+          var itemID = e.target.id;
+          var price = .3;
+          var qty = 2;
+          $.post( "/addToCart", { itemID: itemID, price: price, qty: qty})
+            .done(function( data ) {
+              console.log( "Data Loaded: " + data );
+            });
+
+        //-  $.get( "addToCart/"+e.target.id +"/"+ price + "/" + qty, function( data ) {
+          //-  console.log("received: " + data);
+          //-  location.reload();
+        //-  });
+         
+          //- console.log("showing details for: " + e.target.id);
+          //- window.document.location = "item/"+e.target.id;          
+        });
+        
+        //- $(".removeButton").click(function (e) {
+        $(".editItem").click(function (e) {
+          //-  console.log("removing: " + e.target.id);
+          //- $.get( "removeItem/"+e.target.id, function( data ) {
+          //-   console.log("received: " + data);
+          //-   location.reload();
+          //- });
         });
       });
