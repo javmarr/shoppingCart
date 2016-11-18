@@ -92,12 +92,14 @@ router.get('/invoice', function(req, res, next) {
 
 router.get('/cart', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
-  var userID = req.session.userID;
+  var userID = req.session.user_id;
 
   if (req.user) {
     // get cart for user
-    Cart.find({userID: userID}, function(err, docs) {
-      res.render('cart', {title: "Cart", cart: docs});
+    Cart.findOne({userID: userID}, function(err, docs) {
+      console.log('cart doc');
+      console.log(docs);
+      res.render('cart', {title: "Cart", items: docs.items});
     });
   } else {
     res.redirect('/');
@@ -115,8 +117,8 @@ router.post('/addToCart', function(req, res, next) {
     console.log("trying to add item to cart (req.body)");
     console.log(req.body);
 
-    var userID = "google-oauth2|107118582410291357582";
-    // var userID = req.session.userID;
+    // var userID = "google-oauth2|107118582410291357582";
+    var userID = req.session.user_id;
     var itemID = req.body.itemID;
     var price = parseFloat(req.body.price);
     var qty = parseInt(req.body.qty);
