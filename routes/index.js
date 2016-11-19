@@ -48,8 +48,8 @@ router.get('/catalog', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
   var userID = req.session.user_id;
 
-  //find items that should be shown
-  Item.find({show: true}, function(err, docs) {
+  //find items that should be shown and sort by name ASC
+  Item.find({show: true}, null, {sort: {"name": 1}}, function(err, docs) {
     User.findOne({userID: userID}, function(err, user) {
       console.log('user found: ');
       console.log(user);
@@ -66,8 +66,16 @@ router.post('/catalog', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
   var userID = req.session.user_id;
 
-  var conditions = {};
-  var form = {};
+  var conditions = {}; // to filter
+  var sortConditions = {}; // to sort
+  var form = {}; // to hold form info
+
+  form.sortType = req.body.sortType; //asc or desc
+  if (form.sortType == "DESC")
+    var sortType = -1;
+  else
+    var sortType = 1;
+
   if (!req.body.showHidden) {
     conditions.show = true;
     form.show = false;
@@ -75,8 +83,33 @@ router.post('/catalog', function(req, res, next) {
     form.show = true;
   }
 
+  // --- setting filter values
+  if (req.body.filterTextInput != "") {
+    // add filter if they typed something to filter by
+    form.filterTextInput = req.body.filterTextInput; // text
+    form.filterBy = req.body.filterBy; // attr
+    conditions[form.filterBy] = new RegExp(form.filterTextInput, "i");
+    // conditions[form.filterBy] = form.filterTextInput; // set
+  } // else don't filter (show all)
+
+  // --- setting sorting values
+  if (req.body.sortBy == "") {
+    // soft by item name by default
+    form.sortBy = "name";
+    sortConditions["name"] = sortType; // -1 decending; 1 for ascending
+
+  } else {
+    form.sortBy = req.body.sortBy; // get attr to filter by
+    sortConditions[form.sortBy] = sortType; // -1 decending; 1 for ascending
+  }
+
+
+  console.log("using values for form: ");
+  console.log(form);
+  console.log(conditions);
+  console.log(sortConditions);
   //find items that should be shown
-  Item.find(conditions, function(err, docs) {
+  Item.find(conditions, null, {sort: sortConditions}, function(err, docs) {
     User.findOne({userID: userID}, function(err, user) {
       console.log('user found: ');
       console.log(user);
