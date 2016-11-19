@@ -43,14 +43,21 @@ block content
         select(name="sortType")
           option(value="ASC") ASC
           option(value="DESC") DESC
+        |&nbsp &nbsp &nbsp
       div(class="form-group")
+        label show inStock only  
+          if (showInStockOnly)
+            input(type='checkbox', name='showInStockOnly' checked)
+          else
+            input(type='checkbox', name='showInStockOnly')
+        |&nbsp &nbsp &nbsp
         if isAdmin
           label show hidden  
             if (show)
               input(type='checkbox', name='showHidden' checked)
             else
               input(type='checkbox', name='showHidden')
-            
+        
       &nbsp&nbsp
       input(type='submit', class="btn btn-primary" value='Apply')
       

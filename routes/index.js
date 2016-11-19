@@ -69,6 +69,12 @@ router.post('/catalog', function(req, res, next) {
   var conditions = {}; // to filter
   var sortConditions = {}; // to sort
   var form = {}; // to hold form info
+  var showInStockOnly = false;
+
+  if (req.body.showInStockOnly) {
+    showInStockOnly = true;
+    conditions.numberInStock = {$ne: 0}; // items with !=0 numberInStock
+  }
 
   form.sortType = req.body.sortType; //asc or desc
   if (form.sortType == "DESC")
@@ -114,9 +120,9 @@ router.post('/catalog', function(req, res, next) {
       console.log('user found: ');
       console.log(user);
       if (user) {
-        res.render('catalog', {title: "Catalog", show:form.show, items: docs, isAdmin: user.isAdmin});
+        res.render('catalog', {title: "Catalog", showInStockOnly:showInStockOnly, show:form.show, items: docs, isAdmin: user.isAdmin});
       } else {
-        res.render('catalog', {title: "Catalog", items: docs, isAdmin: false});
+        res.render('catalog', {title: "Catalog", showInStockOnly:showInStockOnly, items: docs, isAdmin: false});
       }
     });
   });
