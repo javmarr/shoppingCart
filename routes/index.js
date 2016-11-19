@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+
 var Cart = require('../models/Cart.js');
 var Email = require('../models/Email.js');
 var Invoice = require('../models/Invoice.js');
@@ -126,7 +129,18 @@ router.get('/cart', function(req, res, next) {
       res.render('cart', {title: "Cart", items: docs.items});
     });
   } else {
-    res.redirect('/');
+    console.log('session cart being used: ');
+    if(req.session.cart) {
+      var cart = req.session.cart;
+      // get from session
+      console.log('session cart being used: ');
+      console.log(cart);
+      res.render('cart', {title: "Cart", items: cart});
+    } else{
+      // no cart anywhere, create empty one
+      req.session.cart = [];
+      res.render('cart', {title: "Cart", items: []});
+    }
   }
 });
 
@@ -136,21 +150,19 @@ router.get('/contact', function(req, res, next) {
 });
 
 router.post('/addToCart', function(req, res, next) {
-  // if (req.user) {
-    // console.log('the user from addToCart: ' + req.user);
-    console.log("trying to add item to cart (req.body)");
-    console.log(req.body);
+  // console.log('the user from addToCart: ' + req.user);
+  // console.log("trying to add item to cart (req.body)");
+  // console.log(req.body);
 
+  var item = req.body.itemToAdd;
+  var itemID = item.itemID;
+  var qty = parseInt(item.qty);
+  console.log("ADDING TO CART ITEM: " + itemID);
+  console.log ('the item to add to cart');
+  console.log (item);
+
+  if (req.user) {
     var userID = req.session.user_id;
-
-    var item = req.body.itemToAdd;
-    var itemID = item.itemID;
-    var qty = parseInt(item.qty);
-    console.log("ADDING TO CART ITEM: " + itemID);
-    console.log ('the item to add to cart');
-    console.log (item);
-    console.log('qty is type ' + typeof(qty));
-
     Cart.findOne({userID:userID, "items.itemID": itemID}, function(err, doc){
       console.log('err: ' + err);
       console.log('got: ' + doc);
@@ -200,6 +212,52 @@ router.post('/addToCart', function(req, res, next) {
         });
       } // end else
     });
+  } else {
+    // guest cart
+    console.log('guest trying to add');
+
+    // get current cart
+    if(req.session.cart){
+      console.log('existing cart found: ');
+      var cart = req.session.cart;
+      console.log(cart);
+    } else {
+      console.log('no cart found in session');
+      var cart = [];
+    }
+
+    var inCart = false;
+    // check if item is on cart
+    for (i in cart) {
+      if (cart[i].itemID == itemID) {
+        inCart = true;
+        cart[i].qty = parseInt(cart[i].qty) + qty;
+        console.log('cart[i].qty' + typeof(cart[i].qty));
+        console.log('qty' + typeof(qty));
+        console.log ('new cart:');
+        console.log(cart);
+        req.session.cart = cart;
+        req.session.success = 'Cart updated';
+
+        res.send('increased qty by ' + qty +' on cart');
+      }
+
+    }
+    if (!inCart) {
+      // add item to it
+      cart.push(item);
+      console.log ('new cart:');
+      console.log(cart);
+      req.session.cart = cart;
+      req.session.success = 'Cart updated';
+
+      res.send('added to cart');
+    }
+
+
+
+
+  }
 });
 
 router.get('/removeFromCart/:itemID', function(req, res, next) {

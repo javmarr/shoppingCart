@@ -60,7 +60,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(session({ secret: process.env.CLIENT_SECRET, resave: false,  saveUninitialized: false }));
+app.use(session({ secret: 'passw38', resave: false,  saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
