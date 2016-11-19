@@ -30,7 +30,8 @@ const HEROKU_MLAB_URI = process.env.HEROKU_MLAB_URI;
 
 
 if(MONGO_HOST) {
-  mongoose.connect('mongodb://admin:' + MONGO_PASSWORD + '@' + MONGO_HOST + ':' + MONGO_PORT + '/' + DB_NAME);
+  mongoose.connect(HEROKU_MLAB_URI);
+  // mongoose.connect('mongodb://admin:' + MONGO_PASSWORD + '@' + MONGO_HOST + ':' + MONGO_PORT + '/' + DB_NAME);
 }
 else {
   require('dotenv').config();
