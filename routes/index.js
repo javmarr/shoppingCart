@@ -292,21 +292,17 @@ router.post('/addToCart', function(req, res, next) {
 
       res.send('added to cart');
     }
-
-
-
-
   }
 });
 
 router.get('/removeFromCart/:itemID', function(req, res, next) {
+  var itemID = req.params.itemID;
+  console.log("trying to remove item");
+  console.log("REMOVING ITEM: " + itemID);
+
   if (req.user) {
     console.log('the user from remove: ' + req.user);
     var userID = req.session.user_id;
-    var itemID = req.params.itemID;
-    console.log("trying to remove item");
-    console.log("REMOVING ITEM: " + itemID);
-
 
     Cart.findOne({userID:userID, "items.itemID": itemID}, function(err, doc){
       console.log('err: ' + err);
@@ -335,9 +331,34 @@ router.get('/removeFromCart/:itemID', function(req, res, next) {
       }
     });
   } else {
-    req.session.error = 'error removing item from cart';
-    res.locals.error = req.session.error;
-    res.send('error');
+    // guest cart
+    console.log('guest trying to remove item from cart');
+
+    // get current cart
+    if (req.session.cart){
+      console.log('existing cart found: ');
+      var cart = req.session.cart;
+      console.log(cart);
+      // check if item is on cart
+      for (i in cart) {
+        if (cart[i].itemID == itemID) {
+          cart.pop(itemID);
+          console.log('removed item' + itemID);
+          console.log ('new cart:');
+          console.log(cart);
+          req.session.cart = cart;
+          req.session.success = 'Cart updated';
+          res.send('removed item' + itemID);
+        }
+      }
+    } else {
+      console.log('no cart found in session');
+      var cart = [];
+      req.session.cart = cart;
+      req.session.error = 'no cart found';
+      res.send('error removing from cart');
+    }
+
   }
 });
 
