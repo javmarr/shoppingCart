@@ -14,8 +14,17 @@ block content
     
     if isAdmin
       a(href="/addItem" class="btn btn-success btn-sm") Add Item
-    
-    
+      
+      form(action="" method="post")
+        p show hidden items?  
+          if (show)
+            input(type='checkbox', name='showHidden' checked)
+          else
+            input(type='checkbox', name='showHidden')
+        br
+        br
+        input(type='submit', value='Submit')
+      
     table(class="table table-striped table-hover")
       tr
         if isAdmin
@@ -46,7 +55,7 @@ block content
           td(class="showDetails" id="#{item.id}") #{item.price}
           td(class="showDetails" id="#{item.id}") #{item.library}
           if isAdmin
-            td(class="showDetails" id="#{item.id}") #{item.show}
+            td(class="showDetails showItem" id="#{item.id}") #{item.show}
             td(class="showDetails" id="#{item.id}") #{item.numberInStock}
 
     br
@@ -54,6 +63,8 @@ block content
     
     script.
       $(document).ready( function () {
+        //- var $(".showItem")
+        
         $(".showDetails").click(function (e) {
           console.log("showing details for: " + e.target.id);
           window.document.location = "item/"+e.target.id;          

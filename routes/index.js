@@ -44,6 +44,7 @@ router.get('/splash', function(req, res, next) {
 router.get('/catalog', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
   var userID = req.session.user_id;
+
   //find items that should be shown
   Item.find({show: true}, function(err, docs) {
     User.findOne({userID: userID}, function(err, user) {
@@ -57,6 +58,34 @@ router.get('/catalog', function(req, res, next) {
     });
   });
 });
+
+router.post('/catalog', function(req, res, next) {
+  setupErrorAndSuccess(req, res, next);
+  var userID = req.session.user_id;
+
+  var conditions = {};
+  var form = {};
+  if (!req.body.showHidden) {
+    conditions.show = true;
+    form.show = false;
+  } else {
+    form.show = true;
+  }
+
+  //find items that should be shown
+  Item.find(conditions, function(err, docs) {
+    User.findOne({userID: userID}, function(err, user) {
+      console.log('user found: ');
+      console.log(user);
+      if (user) {
+        res.render('catalog', {title: "Catalog", show:form.show, items: docs, isAdmin: user.isAdmin});
+      } else {
+        res.render('catalog', {title: "Catalog", items: docs, isAdmin: false});
+      }
+    });
+  });
+});
+
 
 router.get('/item/:itemID', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
@@ -397,7 +426,7 @@ router.post('/editItem/:itemID', function(req, res, next) {
       res.redirect('/editItem/' + itemID);
     } else {
       req.session.success = 'Item updated';
-      res.send('item updated');
+      // res.send('item updated');
       res.redirect('/item/' + itemID);
     }
   });
