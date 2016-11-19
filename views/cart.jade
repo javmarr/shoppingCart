@@ -14,29 +14,64 @@ block content
     
     table(class="table table-striped table-hover")
       tr
-        if isAdmin
-          th
+        th
         th isbn
         th name
         th author
         th genre
         th price
+        th qty
         th library
       each item in items
         tr
           td
-            button(class="btn btn-primary removeButton" id="#{item.id}") delete
-          td(class="showDetails" id="#{item.id}") #{item.isbn}
-          td(class="showDetails" id="#{item.id}") #{item.name}
-          td(class="showDetails" id="#{item.id}") #{item.author}
-          td(class="showDetails" id="#{item.id}") #{item.genre}
-          td(class="showDetails" id="#{item.id}") #{item.price}
-          td(class="showDetails" id="#{item.id}") #{item.library}
+            button(class="btn btn-danger removeFromCart" id="#{item.itemID}") remove
+          td(class="showDetails" id="#{item.itemID}") #{item.isbn}
+          td(class="showDetails" id="#{item.itemID}") #{item.name}
+          td(class="showDetails" id="#{item.itemID}") #{item.author}
+          td(class="showDetails" id="#{item.itemID}") #{item.genre}
+          td(class="showDetails price" id="#{item.itemID}") #{item.price}
+          td(class="showDetails qty" id="#{item.itemID}") #{item.qty}
+          td(class="showDetails" id="#{item.itemID}") #{item.library}
           
           //- input(type="text" name="qtyText" value="#{item.id}")
           //- td
           //-   a(href="product/#{item.id}" class="btn btn-default dealButton") go
     br
     br
-    
+    div(align="right")
+      p Total: 
+      p(id="total")
+    br
     a(href="/" class="btn btn-default btn-block") Back
+    
+    script.
+      $(document).ready( function () {
+        // update total price
+        var prices = $(".price");
+        var qtys = $(".qty");
+        var totalPrice = 0;
+        
+        // total += price x qty
+        for (var i = 0 ; i < prices.length ; i++){  
+          console.log(i);
+          totalPrice += parseFloat(prices[i].innerHTML) * parseFloat(qtys[i].innerHTML);
+        }
+        console.log('total: ' + totalPrice.toFixed(2));
+        $("#total").text("$" + totalPrice.toFixed(2));
+        console.log(typeof (totalPrice));
+        
+        $(".showDetails").click(function (e) {
+          console.log("showing details for: " + e.target.id);
+          window.document.location = "item/"+e.target.id;          
+        });
+        
+        //- $(".removeButton").click(function (e) {
+        $(".removeFromCart").click(function (e) {
+          console.log("removing from cart: " + e.target.id);
+         $.get( "removeFromCart/"+e.target.id, function( data ) {
+           console.log("received: " + data);
+           location.reload();
+         });
+        });
+      });

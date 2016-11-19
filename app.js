@@ -1,7 +1,8 @@
 // TODO:
-//   save cart to user
-//   only admins can view certain things (delete/add inventory, etc)
-
+// admin can edit items (use prefill and additem page)
+// admin can view invoice
+// users can view their orders
+//
 
 var express = require('express');
 var path = require('path');

@@ -58,13 +58,6 @@ router.get('/catalog', function(req, res, next) {
   });
 });
 
-router.get('/catalog.json', function(req, res, next) {
-  console.log('received message');
-  Item.find(function(err, docs){
-    res.send({error: err, data: docs});
-  });
-});
-
 router.get('/item/:itemID', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
   var itemID = req.params.itemID;
@@ -74,6 +67,8 @@ router.get('/item/:itemID', function(req, res, next) {
     User.findOne({userID: userID}, function(err, user) {
       console.log('user found: ');
       console.log(user);
+      console.log('item doc');
+      console.log(doc);
       if (user) {
         res.render('item', {title: "Item", item: doc, isAdmin: user.isAdmin});
       } else {
@@ -117,23 +112,16 @@ router.post('/addToCart', function(req, res, next) {
     console.log("trying to add item to cart (req.body)");
     console.log(req.body);
 
-    // var userID = "google-oauth2|107118582410291357582";
     var userID = req.session.user_id;
-    var itemID = req.body.itemID;
-    var price = parseFloat(req.body.price);
-    var qty = parseInt(req.body.qty);
-    console.log("3");
-    var item = {itemID: itemID, qty: qty, price: price};
 
+    var item = req.body.itemToAdd;
+    var itemID = item.itemID;
+    var qty = parseInt(item.qty);
     console.log("ADDING TO CART ITEM: " + itemID);
     console.log ('the item to add to cart');
     console.log (item);
+    console.log('qty is type ' + typeof(qty));
 
-    // Cart.findOneAndUpdate({userID: userID}, {$push: {items: item}});
-
-    // if the item is already on the cart increase qty
-    // Cart.findOneAndUpdate({userID:userID, "items.itemID": itemID},
-    //   {$inc: {"items.$.qty": 1}},
     Cart.findOne({userID:userID, "items.itemID": itemID}, function(err, doc){
       console.log('err: ' + err);
       console.log('got: ' + doc);
@@ -146,7 +134,9 @@ router.post('/addToCart', function(req, res, next) {
           // get index for item
           if (updatedItems[i].itemID == itemID) {
             // update the value for qty
+            console.log('before - updatedItems.qty is type ' + typeof(updatedItems[i].qty));
             updatedItems[i].qty += qty;
+            console.log('after - updatedItems.qty is type ' + typeof(updatedItems[i].qty));
           }
         }
 
@@ -181,6 +171,48 @@ router.post('/addToCart', function(req, res, next) {
         });
       } // end else
     });
+});
+
+router.get('/removeFromCart/:itemID', function(req, res, next) {
+  if (req.user) {
+    console.log('the user from remove: ' + req.user);
+    var userID = req.session.user_id;
+    var itemID = req.params.itemID;
+    console.log("trying to remove item");
+    console.log("REMOVING ITEM: " + itemID);
+
+
+    Cart.findOne({userID:userID, "items.itemID": itemID}, function(err, doc){
+      console.log('err: ' + err);
+      console.log('got: ' + doc);
+      if (err) {res.send(err);}
+      if (doc) {
+        // found item on user's cart
+        var updatedItems = doc.items;
+
+        // find item id in the cart
+        for (i in updatedItems) {
+          // get index for item
+          if (updatedItems[i].itemID == itemID) {
+            // remove the product (regardless of qty)
+            var removedItem = updatedItems.splice(i, 1); // delete item at i
+            console.log("removedItem" + removedItem);
+          }
+        }
+
+        // save the updated items
+        Cart.update({'userID': userID, 'items.itemID': itemID}, {$set: {'items': updatedItems}},
+          function(err, doc) {
+            req.session.success = 'Cart updated';
+            res.send('removed item from cart');
+        });
+      }
+    });
+  } else {
+    req.session.error = 'error removing item from cart';
+    res.locals.error = req.session.error;
+    res.send('error');
+  }
 });
 
 router.get('/removeItem/:itemID', function(req, res, next) {
@@ -276,6 +308,7 @@ router.get('/addItem', function(req, res, next) {
   res.render('addItem', {title: "Add item"});
 });
 
+
 router.post('/addItem', function(req, res, next) {
   var item = new Item({
     isbn: req.body.isbn,
@@ -311,6 +344,55 @@ router.post('/addItem', function(req, res, next) {
   });
 });
 
+
+router.get('/editItem/:itemID', function(req, res, next) {
+  setupErrorAndSuccess(req, res, next);
+  var itemID = req.params.itemID;
+  console.log('using id: ' + itemID);
+  Item.findOne({_id:itemID}, function(err, doc) {
+    console.log("error: " + err);
+    console.log("got: " + doc);
+
+    if (err) res.send('cannot load itemID given, err: ' + err);
+    else {
+      res.render('editItem', {title: "Edit item", item: doc});
+    }
+  });
+});
+
+router.post('/editItem/:itemID', function(req, res, next) {
+  var itemID = req.params.itemID;
+  console.log('value for show: ' + req.body.show);
+  var updatedItem = new Item({
+    _id: itemID,
+    isbn: req.body.isbn,
+    name: req.body.name,
+    author: req.body.author,
+    genre: req.body.genre,
+    desc: req.body.desc,
+    cost: req.body.cost,
+    price: req.body.price,
+    image: req.body.image,
+    library: req.body.library,
+    inStock: req.body.inStock,
+    show: req.body.show,
+    numberInStock: req.body.numberInStock
+  });
+  console.log("updatedItem to save on edit" + updatedItem);
+  Item.findOneAndUpdate( {_id:itemID}, updatedItem, {new: true, overwrite: true}, function(err, doc){
+    console.log("error: " + err);
+    console.log("got: " + doc);
+    if (err){
+      req.session.error = 'Item not updated';
+      res.redirect('/editItem/' + itemID);
+    } else {
+      req.session.success = 'Item updated';
+      res.redirect('/item/' + itemID);
+    }
+  });
+});
+
+// for splash page
 // handles POST in localhost:<port>/check-in
 router.post('/submit', function(req, res, next){
   console.log(req.body);

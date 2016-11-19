@@ -1,0 +1,66 @@
+extends layout
+// Page Content
+block content
+  div.container
+    div.row
+      div.col-lg-12.text-center
+        h1=title
+        
+      p Edit a book by inputting the information below.
+      br
+      if (error && error.message)
+        p(style="color: red") Error: #{error.message}
+      
+      if (success)
+        p(style="color: green")=success
+        
+      form(action ='', method = "post")
+        p isbn-10
+        input(type='text', name='isbn', placeholder='isbn', value="#{item.isbn}")
+        br 
+        br
+        p name
+        input(type='text', name='name', placeholder='name', value="#{item.name}")
+        br 
+        br
+        p author
+        input(type='text', name='author', placeholder='author', value="#{item.author}")
+        br 
+        br
+        p genre
+        input(type='text', name='genre', placeholder='genre', value="#{item.genre}")
+        br 
+        br
+        p desc
+        textarea(name="desc" rows="4" cols="50")
+          | #{item.desc}
+        br 
+        br
+        p cost
+        input(type='number', step='0.01', min='0', name='cost', placeholder='cost', value="#{item.cost}")
+        br 
+        br
+        p price
+        input(type='number', step='0.01', min='0', name='price', placeholder='price', value="#{item.price}")
+        br 
+        br
+        p image
+        input(type='text', name='image', placeholder='image', value="#{item.image}")
+        br 
+        br
+        p library
+        input(type='text', name='library', placeholder='library', value="#{item.library}")
+        br 
+        br
+        p numberInStock
+        input(type='number', step='1', min='0', name='numberInStock', placeholder='numberInStock', value="#{item.numberInStock}")
+        br 
+        br
+        p show item?  
+          if (item.show)
+            input(type='checkbox', name='show' checked)
+          else
+            input(type='checkbox', name='show')
+        br 
+        br
+        input(type='submit', value='Submit')

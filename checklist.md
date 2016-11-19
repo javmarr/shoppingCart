@@ -6,12 +6,12 @@ User stories help you to think about who a certain feature is built for and why.
 ## Pages/Views
 [√] Home page
 [√] Login page
-[ ] Customer - Catalog View (multiple items)
-[ ] Customer - Detail View (single item)
-[ ] Customer - Shopping Cart
-[ ] Admin - Inventory View (multiple items)
-[ ] Admin - Detail View (single item)
-[ ] Admin - Report View
+[√] Customer - Catalog View (multiple items)
+[√] Customer - Detail View (single item)
+[√] Customer - Shopping Cart
+[√] Admin - Inventory View (multiple items)
+[√] Admin - Detail View (single item)
+[√] Admin - Report View
 
 # User Stories
 ## Home page/Login page
@@ -24,21 +24,21 @@ User stories help you to think about who a certain feature is built for and why.
 [ ] As a customer I want to browse available products so that I can discover new items
 [ ] As a customer I want to be able to search by name or filter by category to find products more quickly
 [ ] As a customer I want to see whether items are in stock so that I won’t have to wait for backorder
-[ ] As a customer I want to click on an item to so that I may view more detail about the product
+[√] As a customer I want to click on an item to so that I may view more detail about the product
 
 ## Customer - Detail View
 [√] As a customer I want to see images of the product so that I understand what I am getting
-[ ] As a customer I want to add an item to a shopping cart so that I can purchase several items at once
+[√] As a customer I want to add an item to a shopping cart so that I can purchase several items at once
 
 ## Customer - Shopping Cart
-[ ] As a customer I want to view the contents of the shopping cart
-[ ] As a customer I want to adjust the quantity of items in the shopping cart
+[√] As a customer I want to view the contents of the shopping cart
+[√] As a customer I want to adjust the quantity of items in the shopping cart
 [ ] As a customer I want to remove items from the shopping cart
 [ ] As a customer I want to check out using a credit card
 [ ] As a customer I want to see an invoice so that I have a record of my purchase
 
 ## Admin - Inventory View
-[ ] As an admin I want to view the available inventory
+[√] As an admin I want to view the available inventory
 [√] As an admin I want to click on a product so that I can view product detail
 [√] As an admin I want to click a button so that I can add new products to inventory
 

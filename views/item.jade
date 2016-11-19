@@ -20,39 +20,51 @@ block content
       if isAdmin
         button(class="btn btn-default editItem" id="#{item.id}") Edit Item
     div
-      p isbn: #{item.isbn}
+      p isbn:
+      p(class="isbn" value="#{item.isbn}") #{item.isbn}
       br
       br
-      p name: #{item.name}
+      p name:
+      p(class="name" value="#{item.name}") #{item.name}
       br
       br
-      p author: #{item.author}
+      p author:
+      p(class="author" value="#{item.author}") #{item.author}
       br
       br
-      p genre: #{item.genre}
+      p genre:
+      p(class="genre" value="#{item.genre}") #{item.genre}
       br
       br
-      p desc: #{item.desc}
+      p desc:
+      p(class="desc" value="#{item.desc}") #{item.desc}
       br
       br
-      p cost: #{item.cost}
+      if isAdmin
+        p cost:
+        p(class="cost" value="#{item.cost}") #{item.cost}
+        br
+        br
+      p price:
+      p(class="price" value="#{item.price}") #{item.price}
       br
       br
-      p price: #{item.price}
+      p library:
+      p(class="library" value="#{item.library}") #{item.library}
       br
       br
-      p library: #{item.library}
+      p inStock:
+      p(class="inStock" value="#{item.inStock}") #{item.inStock}
       br
       br
-      p inStock: #{item.inStock}
-      br
-      br
-      p show: #{item.show}
-      br
-      br
-      p numberInStock: #{item.numberInStock}
-      br
-      br
+      if isAdmin
+        p show:
+        p(class="show" value="#{item.show}") #{item.show}
+        br
+        br
+        p(class="numberInStock" value="#{item.numberInStock}") numberInStock: #{item.numberInStock}
+        br
+        br
 
     br
     a(href="/" class="btn btn-default btn-block") Back
@@ -62,29 +74,30 @@ block content
       $(document).ready( function () {
         $(".addToCart").click(function (e) {
           console.log("adding to cart: " + e.target.id);
+          
           var itemID = e.target.id;
-          var price = $(".price").attr("id");
-          var qty = $(".qty").val();
-          $.post( "/addToCart", { itemID: itemID, price: price, qty: qty})
+          var isbn = $(".isbn").text();
+          var name = $(".name").text();
+          var author = $(".author").text();
+          var genre = $(".genre").text();
+          var library = $(".library").text();
+          // get number value instead of string
+          var price = parseFloat($(".price").attr("id"));
+          var qty = parseInt($(".qty").val());
+        
+          var itemToAdd = {"itemID": itemID, "isbn": isbn, "name": name, "author": author, "genre": genre, "library": library, "price": price, "qty": qty};
+          
+          $.post( "/addToCart", {itemToAdd: itemToAdd})
             .done(function( data ) {
               console.log( "Data Loaded: " + data );
+              // show cart after adding item
+              window.document.location = "../cart";          
             });
-
-        //-  $.get( "addToCart/"+e.target.id +"/"+ price + "/" + qty, function( data ) {
-          //-  console.log("received: " + data);
-          //-  location.reload();
-        //-  });
-         
-          //- console.log("showing details for: " + e.target.id);
-          //- window.document.location = "item/"+e.target.id;          
+          
         });
         
         //- $(".removeButton").click(function (e) {
         $(".editItem").click(function (e) {
-          //-  console.log("removing: " + e.target.id);
-          //- $.get( "removeItem/"+e.target.id, function( data ) {
-          //-   console.log("received: " + data);
-          //-   location.reload();
-          //- });
+          window.document.location = "../editItem/"+e.target.id;
         });
       });
