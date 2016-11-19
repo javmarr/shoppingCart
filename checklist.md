@@ -17,11 +17,11 @@ User stories help you to think about who a certain feature is built for and why.
 ## Home page/Login page
 [ ] As a customer I want to see the featured item(s)
 [√] As a customer I want to be able to create an account and login to have a profile so that I can checkout faster.
-[ ] As a customer I want to see categories of products (if applicable)
+[√] As a customer I want to see categories of products (if applicable)
 [√] As an admin I want to login to manage the inventory.
 
 ## Customer - Catalog View
-[ ] As a customer I want to browse available products so that I can discover new items
+[√] As a customer I want to browse available products so that I can discover new items
 [√] As a customer I want to be able to search by name or filter by category to find products more quickly
 [√] As a customer I want to see whether items are in stock so that I won’t have to wait for backorder
 [√] As a customer I want to click on an item to so that I may view more detail about the product
