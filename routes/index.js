@@ -310,6 +310,11 @@ router.get('/addItem', function(req, res, next) {
 
 
 router.post('/addItem', function(req, res, next) {
+  if (req.body.show)
+    var show = true;
+  else
+    var show = false;
+
   var item = new Item({
     isbn: req.body.isbn,
     name: req.body.name,
@@ -321,7 +326,7 @@ router.post('/addItem', function(req, res, next) {
     image: req.body.image,
     library: req.body.library,
     inStock: req.body.inStock,
-    show: req.body.show,
+    show: show,
     numberInStock: req.body.numberInStock
   });
 
@@ -362,7 +367,12 @@ router.get('/editItem/:itemID', function(req, res, next) {
 
 router.post('/editItem/:itemID', function(req, res, next) {
   var itemID = req.params.itemID;
-  console.log('value for show: ' + req.body.show);
+  // console.log('value for show: ' + req.body.show);
+  if (req.body.show)
+    var show = true;
+  else
+    var show = false;
+  // console.log("show? " + show);
   var updatedItem = new Item({
     _id: itemID,
     isbn: req.body.isbn,
@@ -375,7 +385,7 @@ router.post('/editItem/:itemID', function(req, res, next) {
     image: req.body.image,
     library: req.body.library,
     inStock: req.body.inStock,
-    show: req.body.show,
+    show: show,
     numberInStock: req.body.numberInStock
   });
   console.log("updatedItem to save on edit" + updatedItem);
@@ -387,6 +397,7 @@ router.post('/editItem/:itemID', function(req, res, next) {
       res.redirect('/editItem/' + itemID);
     } else {
       req.session.success = 'Item updated';
+      res.send('item updated');
       res.redirect('/item/' + itemID);
     }
   });
