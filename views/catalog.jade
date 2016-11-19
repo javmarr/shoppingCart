@@ -29,6 +29,7 @@ block content
       tr
         if isAdmin
           th
+        th
         th isbn
         th name
         th author
@@ -46,6 +47,8 @@ block content
           if isAdmin
             td
               button(class="btn btn-danger removeButton" id="#{item.id}") delete
+          td(class="showDetails" id="#{item.id}")
+            img(src="#{item.image}" id="#{item.id}" width="75px" height="112px")
           td(class="showDetails" id="#{item.id}") #{item.isbn}
           td(class="showDetails" id="#{item.id}") #{item.name}
           td(class="showDetails" id="#{item.id}") #{item.author}
