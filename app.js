@@ -27,10 +27,12 @@ const MONGO_PASSWORD = process.env.OPENSHIFT_MONGODB_DB_PASSWORD;
 const DB_NAME = 'shoppingcart';
 
 const HEROKU_MLAB_URI = process.env.HEROKU_MLAB_URI;
+const USE_HEROKU = process.env.USE_HEROKU;
 
-
+// use mlab for db regardless where it's hosted
 if(MONGO_HOST) {
-  mongoose.connect('mongodb://admin:' + MONGO_PASSWORD + '@' + MONGO_HOST + ':' + MONGO_PORT + '/' + DB_NAME);
+  mongoose.connect(HEROKU_MLAB_URI);
+  // mongoose.connect('mongodb://admin:' + MONGO_PASSWORD + '@' + MONGO_HOST + ':' + MONGO_PORT + '/' + DB_NAME);
 }
 else {
   require('dotenv').config();
@@ -44,7 +46,8 @@ else {
 
 
 var app = express();
-if(HEROKU_MLAB_URI)
+
+if(USE_HEROKU)
   app.set('port', (process.env.PORT || 5000));
 
 // view engine setup
@@ -150,7 +153,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
-if(HEROKU_MLAB_URI)
+if(USE_HEROKU)
   app.listen(app.get('port'), function() {
     console.log('Node app is running on port', app.get('port'));
   });
