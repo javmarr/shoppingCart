@@ -23,15 +23,24 @@ var mongoose = require('mongoose');
 const MONGO_HOST = process.env.OPENSHIFT_MONGODB_DB_HOST;
 const MONGO_PORT = process.env.OPENSHIFT_MONGODB_DB_PORT;
 const MONGO_PASSWORD = process.env.OPENSHIFT_MONGODB_DB_PASSWORD;
+
 const DB_NAME = 'shoppingcart';
+
+const HEROKU_MLAB_URI = process.env.HEROKU_MLAB_URI;
+
 
 if(MONGO_HOST) {
   mongoose.connect('mongodb://admin:' + MONGO_PASSWORD + '@' + MONGO_HOST + ':' + MONGO_PORT + '/' + DB_NAME);
 }
 else {
   require('dotenv').config();
-  mongoose.connect('mongodb://localhost/' + DB_NAME);
+  if(HEROKU_MLAB_URI) {
+    mongoose.connect(HEROKU_MLAB_URI);
+  } else {
+    mongoose.connect('mongodb://localhost/' + DB_NAME);
+  }
 }
+
 
 
 var app = express();
