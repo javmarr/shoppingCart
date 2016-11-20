@@ -1,0 +1,42 @@
+extends layout
+// Page Content
+block content
+  div.container
+    div.row
+      div.col-lg-12.text-center
+        h1=title
+
+    if (success)
+      p(style="color: green")=success
+    
+    if (error)
+      p(style="color: red")=error
+    
+    each invoice in multInvoices
+      table(class="table table-striped table-hover")
+        caption purchaseDate: #{invoice.purchaseDate}
+        tr
+          th isbn
+          th name
+          th author
+          th genre
+          th price
+          th qty
+          th library
+        each item in invoice.items
+          tr
+            td #{item.isbn}
+            td #{item.name}
+            td #{item.author}
+            td #{item.genre}
+            td #{item.price}
+            td #{item.qty}
+            td #{item.library}
+      hr
+    br
+    a(href="/" class="btn btn-default btn-block") Back
+    
+    script.
+      $(document).ready( function () {
+        
+      });

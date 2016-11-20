@@ -36,11 +36,13 @@ if(MONGO_HOST) {
 }
 else {
   require('dotenv').config();
-  if(HEROKU_MLAB_URI) {
-    mongoose.connect(HEROKU_MLAB_URI);
-  } else {
-    mongoose.connect('mongodb://localhost/' + DB_NAME);
-  }
+  mongoose.connect('mongodb://localhost/' + DB_NAME);
+
+  // if(HEROKU_MLAB_URI) {
+  //   mongoose.connect(HEROKU_MLAB_URI);
+  // } else {
+  //   mongoose.connect('mongodb://localhost/' + DB_NAME);
+  // }
 }
 
 

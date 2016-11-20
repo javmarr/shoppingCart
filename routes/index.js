@@ -50,6 +50,26 @@ router.get('/splash', function(req, res, next) {
   });
 });
 
+router.get('/myOrders', function(req, res, next) {
+  setupErrorAndSuccess(req, res, next);
+
+  if (req.user) {
+    var userID = req.session.user_id;
+    // get cart from userID
+    Invoice.find({userID: userID}, function(err, docs) {
+      console.log('invoice doc');
+      console.log(docs);
+      // var items = docs.items; // get the items
+      // res.send(docs);
+      res.render('myOrders', {title: "My Orders", multInvoices: docs});
+    });
+
+  } else {
+    // no user == no orders redirect
+    res.redirect('/');
+  }
+});
+
 router.get('/catalog', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
   var userID = req.session.user_id;
@@ -560,7 +580,50 @@ router.post('/editItem/:itemID', function(req, res, next) {
 
 router.get('/success', function(req, res) {
   // order has been successfully charged
-  res.send('order completed');
+  // res.send('order completed');
+  if (req.user) {
+    var userID = req.session.user_id;
+    // get cart from userID
+    Cart.findOne({userID: userID}, function(err, docs) {
+      console.log('cart doc');
+      console.log(docs);
+      var items = docs.items; // get the items
+
+      // assign it to a new invoice
+      // use current date()
+      var invoice = new Invoice({
+        userID: userID,
+        purchaseDate: Date.now(),
+        items: items
+      });
+      // save the invoice
+      invoice.save(function(err){
+        if (err){ // error saving invoice
+          console.log('---INVOICE SAVE ERROR---');
+          console.log(err);
+          req.session.error = "---INVOICE SAVE ERROR---";
+          res.redirect('/');
+        } else {
+          // empty the cart and save it
+          var updatedItems = [];
+          Cart.update({'userID': userID},
+                {$set: {'items': updatedItems}},
+                function(err, doc) {
+                  if (err) res.send (err);
+                  else {
+                    req.session.success = 'Cart cleared after adding to invoice';
+                    res.redirect('/myOrders');
+                  }
+                });
+        }
+      });
+    });
+
+  } else {
+    // no user == no orders redirect
+    res.redirect('/');
+  }
+
 });
 
 router.post('/charge', function(req, res) {

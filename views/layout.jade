@@ -45,6 +45,8 @@ html
             if displayName
               li
                 a(href='/myAccount') My Account
+              li
+                a(href='/myOrders') My Orders
             li
               a(href='/cart') Cart
             if displayName
@@ -53,7 +55,7 @@ html
             else
               li
                 a(onclick="lock.show(); return false;" id="login") Login
-                //- a(href='/login') Login
+                
         // /.navbar-collapse
       // /.container
     script(src='//code.jquery.com/jquery-1.11.0.min.js')

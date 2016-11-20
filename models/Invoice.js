@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var InvoiceSchema = new mongoose.Schema({
-  userID: {type: String, required: true, unique: true},
+  userID: {type: String, required: true},
   purchaseDate: {type: Date, required: true, default: Date.now()},
   items: [{
     itemID: {type: String, required: true},
