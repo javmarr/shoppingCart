@@ -38,15 +38,20 @@ block content
     div(align="right")
       p Total: 
       p(id="total")
+      p(id="realTotal")
+    br
+    a(id="pay" href="#") Checkout
     br
     a(href="/" class="btn btn-default btn-block") Back
     
-    script.
-      $(document).ready( function () {
+    script(src="https://checkout.stripe.com/checkout.js")
+    script. 
+      $(document).ready( function (){
         // update total price
         var prices = $(".price");
         var qtys = $(".qty");
         var totalPrice = 0;
+        
         
         // total += price x qty
         for (var i = 0 ; i < prices.length ; i++){  
@@ -54,15 +59,17 @@ block content
           totalPrice += parseFloat(prices[i].innerHTML) * parseFloat(qtys[i].innerHTML);
         }
         console.log('total: ' + totalPrice.toFixed(2));
+        $("#realTotal").text(totalPrice);
         $("#total").text("$" + totalPrice.toFixed(2));
         console.log(typeof (totalPrice));
         
+        var amount = document.getElementById('realTotal').innerHTML * 100;
+              
         $(".showDetails").click(function (e) {
           console.log("showing details for: " + e.target.id);
           window.document.location = "item/"+e.target.id;          
         });
         
-        //- $(".removeButton").click(function (e) {
         $(".removeFromCart").click(function (e) {
           console.log("removing from cart: " + e.target.id);
          $.get( "removeFromCart/"+e.target.id, function( data ) {
@@ -70,4 +77,33 @@ block content
            location.reload();
          });
         });
-      });
+        
+        function onReceiveToken(token, args) {
+            // Submit token to server so it can charge the card
+            $.post( "../charge", {stripeToken: token.id, amount: amount})
+              .done(function( data ) {
+                console.log( "Data Loaded: " + data );
+                // show cart after adding item
+                window.document.location = "../success";
+              });
+          }
+           var checkout = StripeCheckout.configure({
+            key: 'pk_test_jlswtH3t6kfKdi6tEYXZ6iH5',
+            token: onReceiveToken,
+
+            image: 'https://nairteashop.org/wp-content/uploads/avatar.png',
+            name: 'BookFront',
+            description: 'support your bookstore',
+            amount: amount,
+            billingAddress: false
+        });
+        
+        // Open Checkout when the link is clicked
+        $('#pay').on('click', function() {
+            checkout.open();
+            return false;
+        });
+        
+      }); // end document ready      
+      
+      

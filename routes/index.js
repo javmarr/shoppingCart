@@ -10,6 +10,12 @@ var Invoice = require('../models/Invoice.js');
 var Item = require('../models/Item.js');
 var User = require('../models/User.js');
 
+require('dotenv').config();
+
+var STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+var stripe = require('stripe')(STRIPE_SECRET_KEY);
+
+
 function setupErrorAndSuccess(req, res, next) {
   res.locals.error = req.session.error;
   res.locals.success = req.session.success;
@@ -549,6 +555,32 @@ router.post('/editItem/:itemID', function(req, res, next) {
     }
   });
 });
+
+
+
+router.get('/success', function(req, res) {
+  // order has been successfully charged
+  res.send('order completed');
+});
+
+router.post('/charge', function(req, res) {
+    var stripeToken = req.body.stripeToken;
+    var amount = req.body.amount;
+
+    stripe.charges.create({
+        card: stripeToken,
+        currency: 'usd',
+        amount: amount
+    },
+    function(err, charge) {
+        if (err) {
+            res.send(500, err);
+        } else {
+            res.send('total charged is:' + charge);
+        }
+    });
+});
+
 
 // for splash page
 // handles POST in localhost:<port>/check-in
