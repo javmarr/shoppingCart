@@ -50,13 +50,39 @@ router.get('/splash', function(req, res, next) {
   });
 });
 
+router.get('/report', function(req, res, next) {
+  setupErrorAndSuccess(req, res, next);
+
+  if (req.user) {
+    var userID = req.session.user_id;
+    User.findOne({userID: userID}, function(err, user) {
+      if (err) send(err);
+      // no err, continue
+      if (user.isAdmin) {
+        Invoice.find({}, null, {sort: {"purchaseDate": -1}}, function(err, docs) {
+          console.log('report doc');
+          console.log(docs);
+          res.render('report', {title: "Report", multInvoices: docs});
+        });
+      } else {
+        res.redirect('/'); // only admins can view reports
+      }
+    });
+  } else {
+    // no user == not admin
+    res.redirect('/');
+  }
+});
+
+
 router.get('/myOrders', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
 
   if (req.user) {
     var userID = req.session.user_id;
     // get cart from userID
-    Invoice.find({userID: userID}, function(err, docs) {
+    // show most recent purchases
+    Invoice.find({userID: userID}, null, {sort: {"purchaseDate": -1}}, function(err, docs) {
       console.log('invoice doc');
       console.log(docs);
       // var items = docs.items; // get the items

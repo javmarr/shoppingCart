@@ -35,14 +35,15 @@ if(MONGO_HOST) {
   // mongoose.connect('mongodb://admin:' + MONGO_PASSWORD + '@' + MONGO_HOST + ':' + MONGO_PORT + '/' + DB_NAME);
 }
 else {
-  require('dotenv').config();
-  mongoose.connect('mongodb://localhost/' + DB_NAME);
+  // for local db always
+  // require('dotenv').config();
+  // mongoose.connect('mongodb://localhost/' + DB_NAME);
 
-  // if(HEROKU_MLAB_URI) {
-  //   mongoose.connect(HEROKU_MLAB_URI);
-  // } else {
-  //   mongoose.connect('mongodb://localhost/' + DB_NAME);
-  // }
+  if(HEROKU_MLAB_URI) {
+    mongoose.connect(HEROKU_MLAB_URI);
+  } else {
+    mongoose.connect('mongodb://localhost/' + DB_NAME);
+  }
 }
 
 
