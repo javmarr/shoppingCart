@@ -41,7 +41,12 @@ function setupErrorAndSuccess(req, res, next) {
 // router.get('/:user', function(req, res, next) {
 router.get('/', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
-  res.render('index');
+
+  Item.find({}, null, {sort: {"name": 1}, "limit": 8}, function(err, docs) {
+    if (err) res.render('index');
+    res.render('index', {items:docs});
+  })
+
 });
 
 router.get('/splash', function(req, res, next) {
@@ -73,6 +78,61 @@ router.get('/report', function(req, res, next) {
     res.redirect('/');
   }
 });
+
+router.post('/report', function(req, res, next) {
+  setupErrorAndSuccess(req, res, next);
+  var userID = req.session.user_id;
+  var conditions = {}; // to filter
+
+  console.log("using values for form: ");
+  console.log("req.body.invoiceDate: "+ req.body.invoiceDate);
+  console.log("invoicedate type : "+ typeof (req.body.invoiceDate));
+
+  if (req.body.invoiceDate) {
+    var invoiceDate = req.body.invoiceDate;
+    var splitDate = invoiceDate.split('-');
+    var year = parseInt(splitDate[0]);
+    var month = parseInt(splitDate[1]);
+    var day = parseInt(splitDate[2]);
+
+    // get the input date and the one after the input
+    var today = new Date(year, month-1, day);
+    var tomorrow = new Date(year, month-1, day);
+    tomorrow.setDate(tomorrow.getDate()+1);
+    console.log("today: " + today);
+    console.log("tomorrow: " + tomorrow);
+    conditions = {"purchaseDate": {"$gte": today, "$lt": tomorrow}};
+  }
+
+  console.log("conditions");
+  console.log(conditions);
+
+  if (req.user) {
+    var userID = req.session.user_id;
+    User.findOne({userID: userID}, function(err, user) {
+      if (err) send(err);
+      // no err, continue
+      if (user.isAdmin) {
+
+        Invoice.find(conditions, null, {sort: {"purchaseDate": -1}}, function(err, docs) {
+          console.log('report doc');
+          console.log(docs);
+          res.render('report', {title: "Report", multInvoices: docs});
+        });
+      } else {
+        res.redirect('/'); // only admins can view reports
+      }
+    });
+  } else {
+    // no user == not admin
+    res.redirect('/');
+  }
+
+});
+
+
+
+
 
 
 router.get('/myOrders', function(req, res, next) {
@@ -215,9 +275,25 @@ router.get('/cart', function(req, res, next) {
   if (req.user) {
     // get cart for user
     Cart.findOne({userID: userID}, function(err, docs) {
-      console.log('cart doc');
+      console.log('cart docs');
       console.log(docs);
-      res.render('cart', {title: "Cart", items: docs.items});
+      if (docs) res.render('cart', {title: "Cart", items: docs.items});
+      else {
+        // create empty
+        var updatedItems = [];
+        var emptyCart = new Cart({
+          userID: userID,
+          items: []
+        });
+        emptyCart.save(function(err, doc) {
+          if (err) {
+            res.locals.error = "cart create error";
+            res.render('/');
+          }
+          else res.render('cart', {title: "Cart", items: []});
+        });
+      }
+
     });
   } else {
     console.log('session cart being used: ');

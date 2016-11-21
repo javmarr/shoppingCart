@@ -38,9 +38,9 @@ block content
     div(align="right")
       p Total: 
       p(id="total")
-      p(id="realTotal")
-    br
-    a(id="pay" href="#") Checkout
+      p(style="display:none" id="realTotal")
+      br
+      a(id="pay" class="btn btn-primary" href="#") Checkout
     br
     a(href="/" class="btn btn-default btn-block") Back
     
@@ -91,11 +91,11 @@ block content
             key: 'pk_test_jlswtH3t6kfKdi6tEYXZ6iH5',
             token: onReceiveToken,
 
-            image: 'https://nairteashop.org/wp-content/uploads/avatar.png',
+            image: 'http://www.hodgsons.uk.com/wp-content/uploads/2015/10/hodgsons_our_history_square-300x300.jpg',
             name: 'BookFront',
-            description: 'support your bookstore',
+            description: 'Thank you for supporting your local bookstore',
             amount: amount,
-            billingAddress: false
+            billingAddress: true
         });
         
         // Open Checkout when the link is clicked

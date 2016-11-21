@@ -15,7 +15,7 @@ User stories help you to think about who a certain feature is built for and why.
 
 # User Stories
 ## Home page/Login page
-[ ] As a customer I want to see the featured item(s)
+[√] As a customer I want to see the featured item(s)
 [√] As a customer I want to be able to create an account and login to have a profile so that I can checkout faster.
 [√] As a customer I want to see categories of products (if applicable)
 [√] As an admin I want to login to manage the inventory.
@@ -34,8 +34,8 @@ User stories help you to think about who a certain feature is built for and why.
 [√] As a customer I want to view the contents of the shopping cart
 [√] As a customer I want to adjust the quantity of items in the shopping cart
 [√] As a customer I want to remove items from the shopping cart
-[ ] As a customer I want to check out using a credit card
-[ ] As a customer I want to see an invoice so that I have a record of my purchase
+[√] As a customer I want to check out using a credit card
+[√] As a customer I want to see an invoice so that I have a record of my purchase
 
 ## Admin - Inventory View
 [√] As an admin I want to view the available inventory
@@ -48,8 +48,8 @@ User stories help you to think about who a certain feature is built for and why.
 [√] As an admin I want to edit product detail so that it is current and up-to-date
 
 ## Admin - Report View
-[ ] As an admin I want to view the invoices for items sold today
-[ ] As an admin I want to view the estimated profit for items sold today (total price sold - total cost sold)
+[√] As an admin I want to view the invoices for items sold today
+[√] As an admin I want to view the estimated profit for items sold today (total price sold - total cost sold)
 [√] As an admin I want to view products with low inventory so that I can order more
 
 # Data (sampling, does not reflect database specific keys)

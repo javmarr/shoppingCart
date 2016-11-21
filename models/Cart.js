@@ -9,9 +9,10 @@ var CartSchema = new mongoose.Schema({
     name: {type: String, required: true},
     author: {type: String, required: true},
     genre: {type: String, required: true},
+    cost: {type: Number, required: true},
     price: {type: Number, required: true},
     library: {type: String, required: false},
-    
+
     qty: {type: Number, required: true}
   }]
 });

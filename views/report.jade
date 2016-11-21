@@ -12,6 +12,12 @@ block content
     if (error)
       p(style="color: red")=error
     
+    form(class="form-inline" action="" method="post")
+      div(class="form-group")
+        label Choose Date:&nbsp
+        input(type="date", name="invoiceDate")
+      input(type='submit', class="btn btn-primary" value='Apply')
+      
     each invoice in multInvoices
       table(class="table table-striped table-hover")
         caption userID: #{invoice.userID} 
@@ -24,20 +30,51 @@ block content
           th price
           th qty
           th library
+          th cost
         each item in invoice.items
           tr
             td #{item.isbn}
             td #{item.name}
             td #{item.author}
             td #{item.genre}
-            td #{item.price}
-            td #{item.qty}
+            td(class="price") #{item.price}
+            td(class="qty") #{item.qty}
             td #{item.library}
+            td(class="cost") #{item.cost}
       hr
+    br
+    br
+    div(align="right")
+      p(style="display:inline") Total Sold:
+      p(style="display:inline")(id="totalSold")
+      p(style="display:inline") &nbsp &nbsp Total Cost:
+      p(style="display:inline")(id="totalCost")
+      p(style="display:inline") &nbsp &nbsp Total Profit:
+      p(style="display:inline")(id="totalProfit")
+      br
     br
     a(href="/" class="btn btn-default btn-block") Back
     
     script.
       $(document).ready( function () {
+        var prices = $(".price");
+        var qtys = $(".qty");
+        var costs = $(".cost");
+        var totalPrice = 0;
+        var totalCost = 0;
+        
+        // total += price x qty
+        for (var i = 0 ; i < prices.length ; i++){  
+          totalPrice += parseFloat(prices[i].innerHTML) * parseFloat(qtys[i].innerHTML);
+          totalCost += parseFloat(costs[i].innerHTML) * parseFloat(qtys[i].innerHTML);
+        }
+        $("#totalSold").text("$" + totalPrice.toFixed(2));
+        $("#totalCost").text("$" + totalCost.toFixed(2));
+        
+        totalProfit = totalPrice - totalCost;
+        $("#totalProfit").text("$" + totalProfit.toFixed(2));
+        
+        console.log('total: ' + totalPrice.toFixed(2));
+        console.log(typeof (totalPrice));
         
       });

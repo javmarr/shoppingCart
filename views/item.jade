@@ -14,6 +14,7 @@ block content
       //- button add to cart
       div
       p(class="price" id="#{item.price}") $#{item.price}
+      p(class="cost" style="display:none" id="#{item.cost}") #{item.cost}
       p QTY 
       input(class="qty" type="number" id="#{item.price}" step="1" min="1" value="1")
       button(class="btn btn-primary addToCart" id="#{item.id}") Add to Cart
@@ -83,9 +84,11 @@ block content
           var library = $(".library").text();
           // get number value instead of string
           var price = parseFloat($(".price").attr("id"));
+          var cost = parseFloat($(".cost").attr("id"));
+          
           var qty = parseInt($(".qty").val());
         
-          var itemToAdd = {"itemID": itemID, "isbn": isbn, "name": name, "author": author, "genre": genre, "library": library, "price": price, "qty": qty};
+          var itemToAdd = {"itemID": itemID, "isbn": isbn, "name": name, "author": author, "genre": genre, "library": library, "price": price, "cost": cost, "qty": qty};
           
           $.post( "/addToCart", {itemToAdd: itemToAdd})
             .done(function( data ) {
