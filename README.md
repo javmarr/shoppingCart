@@ -6,7 +6,7 @@ Simple shopping cart application for E-Commerce
 https://shoppingcart-javmarr.herokuapp.com
 
 ## If for some reason the link above does not work try:
-shoppingcart-javmarr.rhcloud.com
+https://shoppingcart-javmarr.rhcloud.com
 
 
 ## You can use this to import the json files and recreate the DB
