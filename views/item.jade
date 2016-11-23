@@ -13,11 +13,16 @@ block content
       img(src="#{item.image}" width="300px" height="450px")
       //- button add to cart
       div
-      p(class="price" id="#{item.price}") $#{item.price}
+      p(class="price" style="display:none" id="#{item.price}") $#{item.price}
       p(class="cost" style="display:none" id="#{item.cost}") #{item.cost}
-      p QTY 
-      input(class="qty" type="number" id="#{item.price}" step="1" min="1" value="1")
-      button(class="btn btn-primary addToCart" id="#{item.id}") Add to Cart
+      
+      if isInStock
+        p QTY
+        input(class="qty" type="number" id="#{item.price}" step="1" min="1" max="#{item.numberInStock}" value="1")
+        button(class="btn btn-primary addToCart" id="#{item.id}") Add to Cart
+      else 
+        p(style="color:red") Item is out of stock
+          
       if isAdmin
         button(class="btn btn-default editItem" id="#{item.id}") Edit Item
     div
@@ -54,19 +59,16 @@ block content
       p(class="library" value="#{item.library}") #{item.library}
       br
       br
-      p inStock:
-      p(class="inStock" value="#{item.inStock}") #{item.inStock}
-      br
-      br
       if isAdmin
         p show:
         p(class="show" value="#{item.show}") #{item.show}
         br
         br
-        p(class="numberInStock" value="#{item.numberInStock}") numberInStock: #{item.numberInStock}
+        p(class="numberInStock" id="#{item.numberInStock}" value="#{item.numberInStock}") numberInStock: #{item.numberInStock}
         br
         br
-
+      else 
+        p(class="numberInStock" display="none" id="#{item.numberInStock}"  value="#{item.numberInStock}") numberInStock: #{item.numberInStock}
     br
     a(href="/" class="btn btn-default btn-block") Back
 
@@ -85,10 +87,11 @@ block content
           // get number value instead of string
           var price = parseFloat($(".price").attr("id"));
           var cost = parseFloat($(".cost").attr("id"));
-          
           var qty = parseInt($(".qty").val());
-        
-          var itemToAdd = {"itemID": itemID, "isbn": isbn, "name": name, "author": author, "genre": genre, "library": library, "price": price, "cost": cost, "qty": qty};
+          
+          var numberInStock = parseInt($(".numberInStock").attr("id"));
+          
+          var itemToAdd = {"itemID": itemID, "isbn": isbn, "name": name, "author": author, "genre": genre, "library": library, "price": price, "cost": cost, "qty": qty, "numberInStock": numberInStock};
           
           $.post( "/addToCart", {itemToAdd: itemToAdd})
             .done(function( data ) {

@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var mongoose = require('mongoose');
 
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
@@ -252,10 +253,15 @@ router.get('/item/:itemID', function(req, res, next) {
       console.log(user);
       console.log('item doc');
       console.log(doc);
-      if (user) {
-        res.render('item', {title: "Item", item: doc, isAdmin: user.isAdmin});
+      if (doc.numberInStock <= 0) {
+        var isInStock = false;
       } else {
-        res.render('item', {title: "Item", item: doc, isAdmin: false});
+        var isInStock = true;
+      }
+      if (user) {
+        res.render('item', {title: "Item", item: doc, isInStock: isInStock, isAdmin: user.isAdmin});
+      } else {
+        res.render('item', {title: "Item", item: doc, isInStock: isInStock, isAdmin: false});
       }
     });
   });
@@ -324,9 +330,13 @@ router.post('/addToCart', function(req, res, next) {
   var item = req.body.itemToAdd;
   var itemID = item.itemID;
   var qty = parseInt(item.qty);
+  var numberInStock = parseInt(item.numberInStock);
+
   console.log("ADDING TO CART ITEM: " + itemID);
   console.log ('the item to add to cart');
   console.log (item);
+
+
 
   if (req.user) {
     var userID = req.session.user_id;
@@ -348,35 +358,71 @@ router.post('/addToCart', function(req, res, next) {
           }
         }
 
-        // save the updated items
-        Cart.update({'userID': userID, 'items.itemID': itemID},
-              {$set: {'items': updatedItems}},
-              function(err, doc) {
+        console.log('numberInStock: ' + numberInStock);
+        // check if the qty is over stocked items
+        if (updatedItems[i].qty > numberInStock) {
+          console.log("not enough in stock");
+          req.session.error = 'not enough in stock';
+          // return to the item page with error
+          res.send('error: not enough in stock');
+        } else {
+          // save the updated items
+          Cart.update({'userID': userID, 'items.itemID': itemID}, {$set: {'items': updatedItems}}, function(err, doc) {
+            // remove cart from numberInStock
+            Item.findOneAndUpdate({_id: itemID}, {$inc: {"numberInStock" : -1*qty}}, function(err, doc) {
+              if (err) {
+                req.session.error = 'error: could not update stock: ' + err;
+                // return to the item page with error
+                res.send('error: could not update stock' + err);
+              } else {
+                // it worked
                 req.session.success = 'Cart updated';
                 res.send('increased qty by ' + qty +' on cart');
-              });
+              }
+            });
+          });
+        }
       }
       else {
         // item is not on user's cart
         console.log('failed to increase qty, adding new item instead');;
+        console.log('numberInStock: ' + numberInStock);
 
-        // find cart and add item to it
-        Cart.findOneAndUpdate(
-          {userID: userID},
-          {$push : {items:item} },
-          function (err, raw) {
-            if (err){
-              console.log('account error was ' + err);
-              console.log('The raw response from Mongo was ' + raw);
-              console.log('---SAVE ERROR---');
-              console.log(err.name);
-              console.log(err.code);
-            } else {
-              req.session.success = 'Cart updated';
-              res.send('added to cart');
-              // res.redirect('/cart');
-            }
-        });
+        // check if the qty is over stocked items
+        if (qty > numberInStock) {
+          console.log("not enough in stock");
+          req.session.error = 'not enough in stock';
+          // return to the item page with error
+          res.send('error: not enough in stock');
+        } else {
+          // enough in stock, add to cart
+          // find cart and add item to it
+          Cart.findOneAndUpdate(
+            {userID: userID},
+            {$push : {items:item} },
+            function (err, raw) {
+              if (err){
+                console.log('account error was ' + err);
+                console.log('The raw response from Mongo was ' + raw);
+                console.log('---SAVE ERROR---');
+                console.log(err.name);
+                console.log(err.code);
+              } else {
+                Item.findOneAndUpdate({_id: itemID}, {$inc: {"numberInStock" : -1*qty}}, function(err, doc) {
+                  if (err) {
+                    req.session.error = 'error: could not update stock: ' + err;
+                    // return to the item page with error
+                    res.send('error: could not update stock' + err);
+                  } else {
+                    // it worked
+                    req.session.success = 'Cart updated';
+                    res.send('added to cart');
+                  }
+                });
+              }
+          });
+        }
+
       } // end else
     });
   } else {
@@ -399,26 +445,60 @@ router.post('/addToCart', function(req, res, next) {
       if (cart[i].itemID == itemID) {
         inCart = true;
         cart[i].qty = parseInt(cart[i].qty) + qty;
-        console.log('cart[i].qty' + typeof(cart[i].qty));
-        console.log('qty' + typeof(qty));
-        console.log ('new cart:');
-        console.log(cart);
-        req.session.cart = cart;
-        req.session.success = 'Cart updated';
-
-        res.send('increased qty by ' + qty +' on cart');
+        // item is not on user's cart
+        console.log('failed to increase qty, adding new item instead');;
+        // check if the qty is over stocked items
+        if (cart[i].qty > numberInStock) {
+          console.log("not enough in stock");
+          req.session.error = 'not enough in stock';
+          // return to the item page with error
+          res.send('error: not enough in stock');
+        } else{
+          Item.findOneAndUpdate({_id: itemID}, {$inc: {"numberInStock" : -1*qty}}, function(err, doc) {
+            if (err) {
+              req.session.error = 'error: could not update stock: ' + err;
+              // return to the item page with error
+              res.send('error: could not update stock' + err);
+            } else {
+              // it worked
+              console.log ('new cart:');
+              console.log(cart);
+              req.session.cart = cart;
+              req.session.success = 'Cart updated';
+              res.send('increased qty by ' + qty +' on cart');
+            }
+          });
+        }
       }
 
     }
     if (!inCart) {
-      // add item to it
-      cart.push(item);
-      console.log ('new cart:');
-      console.log(cart);
-      req.session.cart = cart;
-      req.session.success = 'Cart updated';
+      if (qty > numberInStock) {
+        console.log("not enough in stock");
+        req.session.error = 'not enough in stock';
+        // return to the item page with error
+        res.send('error: not enough in stock');
+      } else {
+        // add item to it
+        cart.push(item);
+        console.log ('new cart:');
+        console.log(cart);
 
-      res.send('added to cart');
+        Item.findOneAndUpdate({_id: itemID}, {$inc: {"numberInStock" : -1*qty}}, function(err, doc) {
+          if (err) {
+            req.session.error = 'error: could not update stock: ' + err;
+            // return to the item page with error
+            res.send('error: could not update stock' + err);
+          } else {
+            // it worked
+            console.log ('new cart:');
+            console.log(cart);
+            req.session.cart = cart;
+            req.session.success = 'Cart updated';
+            res.send('added to cart');
+          }
+        });
+      }
     }
   }
 });
@@ -439,11 +519,13 @@ router.get('/removeFromCart/:itemID', function(req, res, next) {
       if (doc) {
         // found item on user's cart
         var updatedItems = doc.items;
-
+        var qty = 0;
         // find item id in the cart
         for (i in updatedItems) {
           // get index for item
           if (updatedItems[i].itemID == itemID) {
+            // keep the qty for use later on
+            qty = updatedItems[i].qty;
             // remove the product (regardless of qty)
             var removedItem = updatedItems.splice(i, 1); // delete item at i
             console.log("removedItem" + removedItem);
@@ -453,8 +535,18 @@ router.get('/removeFromCart/:itemID', function(req, res, next) {
         // save the updated items
         Cart.update({'userID': userID, 'items.itemID': itemID}, {$set: {'items': updatedItems}},
           function(err, doc) {
-            req.session.success = 'Cart updated';
-            res.send('removed item from cart');
+            // add item back to numberInStock
+            Item.findOneAndUpdate({_id: itemID}, {$inc: {"numberInStock" : qty}}, function(err, doc) {
+              if (err) {
+                req.session.error = 'error: could not update stock: ' + err;
+                // return to the item page with error
+                res.send('error: could not update stock' + err);
+              } else {
+                // it worked
+                req.session.success = 'Cart updated';
+                res.send('removed item from cart');
+              }
+            })
         });
       }
     });
@@ -600,7 +692,6 @@ router.post('/addItem', function(req, res, next) {
     price: req.body.price,
     image: req.body.image,
     library: req.body.library,
-    inStock: req.body.inStock,
     show: show,
     numberInStock: req.body.numberInStock
   });
@@ -690,9 +781,9 @@ router.get('/success', function(req, res) {
       console.log('cart doc');
       console.log(docs);
       var items = docs.items; // get the items
-
       // assign it to a new invoice
       // use current date()
+
       var invoice = new Invoice({
         userID: userID,
         purchaseDate: Date.now(),
@@ -718,8 +809,8 @@ router.get('/success', function(req, res) {
                   }
                 });
         }
-      });
-    });
+      }); // invoice.save
+    }); // cart.findOne
 
   } else {
     // no user == no orders redirect

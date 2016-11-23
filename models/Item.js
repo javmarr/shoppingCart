@@ -10,7 +10,6 @@ var ItemSchema = new mongoose.Schema({
   price: {type: Number, required: true},
   image: {type: String, required: false},
   library: {type: String, required: false},
-  inStock: {type: Boolean, required: true, default: true},
   show: {type: Boolean, required: true, default: true},
   numberInStock: {type: Number, required: true}
 });
