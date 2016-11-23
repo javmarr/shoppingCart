@@ -1,0 +1,4 @@
+{"_id":{"$oid":"58337fa1a1f39492145bb364"},"userID":"auth0|582fe9605c8f8fe10eee623d","firstName":"Admin","lastName":"McAdmin","email":"admin@live.com","streetAddr":"5583 E Random St","city":"Mission","state":"TX","zip":"78574","isAdmin":true,"__v":0}
+{"_id":{"$oid":"5833858ea1f39492145bb369"},"userID":"google-oauth2|107118582410291357582","firstName":"Tom","lastName":"Smith","email":"bob@live.com","streetAddr":"","city":"","state":"","zip":"","isAdmin":false,"__v":0}
+{"_id":{"$oid":"58338812a1f39492145bb36d"},"userID":"facebook|1070767639637798","firstName":"","lastName":"","email":"","streetAddr":"","city":"","state":"","zip":"","isAdmin":false,"__v":0}
+{"_id":{"$oid":"58338e53a1f39492145bb373"},"userID":"google-oauth2|116697918359594233479","firstName":"","lastName":"","email":"","streetAddr":"","city":"","state":"","zip":"","isAdmin":false,"__v":0}
