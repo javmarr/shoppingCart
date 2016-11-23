@@ -43,7 +43,7 @@ function setupErrorAndSuccess(req, res, next) {
 router.get('/', function(req, res, next) {
   setupErrorAndSuccess(req, res, next);
 
-  Item.find({}, null, {sort: {"name": 1}, "limit": 8}, function(err, docs) {
+  Item.find({show: true}, null, {sort: {"name": 1}, "limit": 8}, function(err, docs) {
     if (err) res.render('index');
     res.render('index', {items:docs});
   })
